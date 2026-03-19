@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>노즐 계산</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 400px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+        text-align: center;
+    }
+    .input-group {
+        margin-bottom: 15px;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+    }
+    input {
+        width: 100%;
+        padding: 8px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+    button {
+        width: 100%;
+        padding: 12px;
+        background: orange;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    button:hover {
+        background: darkorange;
+    }
+    .result {
+        margin-top: 20px;
+        padding: 10px;
+        background: #eef;
+        border-radius: 10px;
+    }
+    .nozzle {
+        text-align: center;
+        margin-top: 20px;
+        font-family: monospace;
+        white-space: pre;
+    }
+    .error {
+        color: red;
+        margin-top: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>🔥 노즐 계산</h1>
+
+    <div class="input-group">
+        <label>연료</label>
+        <input type="text" value="KSNB Fine" disabled>
+    </div>
+
+    <div class="input-group">
+        <label>챔버 내경 (mm)</label>
+        <input type="number" id="inner">
+    </div>
+
+    <div class="input-group">
+        <label>챔버 길이 (mm)</label>
+        <input type="number" id="length">
+    </div>
+
+    <div class="input-group">
+        <label>외경 (mm)</label>
+        <input type="number" id="outer">
+    </div>
+
+    <div class="input-group">
+        <label>코어 직경 (mm)</label>
+        <input type="number" id="core">
+    </div>
+
+    <button onclick="calculate()">🚀 계산하기</button>
+
+    <div class="error" id="error"></div>
+
+    <div class="result" id="result" style="display:none;">
+        <p>추력: <span id="thrust"></span> N</p>
+        <p>연소 시간: <span id="time"></span> s</p>
+        <p>챔버 압력: <span id="pressure"></span> MPa</p>
+        <p>배기 속도: <span id="velocity"></span> m/s</p>
+        <p>비추력(Isp): <span id="isp"></span> s</p>
+    </div>
+
+    <div class="nozzle" id="nozzle" style="display:none;">
+        /\
+       /  \
+      /    \
+     |      |
+     |      |
+      \    /
+       \  /
+        \/
+    </div>
+
+</div>
+
+<script>
+function calculate() {
+    let inner = parseFloat(document.getElementById("inner").value);
+    let length = parseFloat(document.getElementById("length").value);
+    let outer = parseFloat(document.getElementById("outer").value);
+    let core = parseFloat(document.getElementById("core").value);
+    let error = document.getElementById("error");
+
+    error.innerText = "";
+
+    if (core >= inner) {
+        error.innerText = "코어 직경은 챔버 내경보다 작아야 합니다.";
+        return;
+    }
+
+    if (outer <= inner) {
+        error.innerText = "외경은 챔버 내경보다 커야 합니다.";
+        return;
+    }
+
+    // 간단한 가짜 계산 (나중에 실제 식 넣으면 됨)
+    let thrust = (inner * length) / 10;
+    let time = length / 100;
+    let pressure = inner / 20;
+    let velocity = inner * 30;
+    let isp = velocity / 9.8;
+
+    document.getElementById("thrust").innerText = thrust.toFixed(1);
+    document.getElementById("time").innerText = time.toFixed(2);
+    document.getElementById("pressure").innerText = pressure.toFixed(2);
+    document.getElementById("velocity").innerText = velocity.toFixed(0);
+    document.getElementById("isp").innerText = isp.toFixed(0);
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("nozzle").style.display = "block";
+}
+</script>
+
+</body>
+</html>
