@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>자동 로켓 설계</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f0f2f5;
+    padding: 20px;
+}
+.container {
+    max-width: 420px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+h1 {
+    text-align: center;
+}
+.input-group {
+    margin-bottom: 15px;
+}
+input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+button {
+    width: 100%;
+    padding: 12px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+}
+.result {
+    margin-top: 20px;
+    background: #eef;
+    padding: 10px;
+    border-radius: 10px;
+}
+img {
+    width: 100%;
+    margin-top: 15px;
+}
+.error {
+    color: red;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 자동 로켓 설계</h1>
+
+<div class="input-group">
+<label>목표 추력 (N)</label>
+<input type="number" id="thrust">
+</div>
+
+<div class="input-group">
+<label>로켓 길이 (mm)</label>
+<input type="number" id="length">
+</div>
+
+<div class="input-group">
+<label>로켓 직경 (mm)</label>
+<input type="number" id="diameter">
+</div>
+
+<button onclick="design()">🚀 설계 시작</button>
+
+<div class="error" id="error"></div>
+
+<div class="result" id="result" style="display:none;">
+
+<h3>📊 챔버 설계</h3>
+<p>내경: <span id="inner"></span> mm</p>
+<p>외경: <span id="outer"></span> mm</p>
+
+<h3>🔩 오링 추천</h3>
+<p>규격: <span id="oring"></span></p>
+<p>내경: <span id="oringID"></span> mm</p>
+<p>두께: <span id="oringCS"></span> mm</p>
+
+<h3>📐 노즐 설계</h3>
+<p>목 직경: <span id="throat"></span> mm</p>
+<p>출구 직경: <span id="exit"></span> mm</p>
+<p>노즐 길이: <span id="nozzleLength"></span> mm</p>
+<p>확장각: <span id="angle"></span> °</p>
+
+<img src="nozzle.png" id="nozzleImg">
+
+</div>
+
+</div>
+
+<script>
+function design() {
+
+let thrust = parseFloat(document.getElementById("thrust").value);
+let length = parseFloat(document.getElementById("length").value);
+let diameter = parseFloat(document.getElementById("diameter").value);
+let error = document.getElementById("error");
+
+error.innerText = "";
+
+if (!thrust || !length || !diameter) {
+    error.innerText = "모든 값을 입력하세요.";
+    return;
+}
+
+// 🔥 챔버 계산 (단순화)
+let inner = Math.sqrt(thrust) * 2;
+let outer = inner + 10;
+
+// 🔩 오링 추천 (간단 규격 매칭)
+let oringSizes = [
+    {name:"AS568-214", id: 30, cs: 3.5},
+    {name:"AS568-218", id: 40, cs: 3.5},
+    {name:"AS568-222", id: 50, cs: 3.5},
+    {name:"AS568-228", id: 60, cs: 3.5}
+];
+
+let selected = oringSizes[0];
+for (let i of oringSizes) {
+    if (Math.abs(i.id - outer) < Math.abs(selected.id - outer)) {
+        selected = i;
+    }
+}
+
+// 📐 노즐 계산
+let throat = inner * 0.4;
+let exit = inner * 0.8;
+let nozzleLength = inner * 1.5;
+let angle = 15;
+
+// 결과 출력
+document.getElementById("inner").innerText = inner.toFixed(1);
+document.getElementById("outer").innerText = outer.toFixed(1);
+
+document.getElementById("oring").innerText = selected.name;
+document.getElementById("oringID").innerText = selected.id;
+document.getElementById("oringCS").innerText = selected.cs;
+
+document.getElementById("throat").innerText = throat.toFixed(1);
+document.getElementById("exit").innerText = exit.toFixed(1);
+document.getElementById("nozzleLength").innerText = nozzleLength.toFixed(1);
+document.getElementById("angle").innerText = angle;
+
+document.getElementById("result").style.display = "block";
+}
+</script>
+
+</body>
+</html>
