@@ -39,6 +39,15 @@ app.get('/', async (req, res) => {
   }
 });
 
+const path = require('path'); // 파일 맨 위쪽에 이 줄이 없다면 추가해 주세요.
+
+// ... 기존 코드들 ...
+
+// 이 부분을 추가해 줍니다!
+app.get('/nozzle.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'nozzle.html'));
+});
+
 app.listen(port, () => {
   console.log(`서버가 포트 ${port}에서 실행 중입니다.`);
 });
