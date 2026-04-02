@@ -1,227 +1,213 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket Lab - 노즐 및 자동 설계</title>
+    <title>ICARUS | Nozzle Design</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #27ae60;
-            --orange-color: #f39c12;
-            --bg-color: #f4f7f6;
+            --bg: #ffffff;
+            --text: #000000;
+            --accent: #ffcc00;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 40px 20px;
         }
+
+        .nav-back {
+            max-width: 600px;
+            margin: 0 auto 20px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: bold;
+            display: inline-block;
+        }
+
         .container {
-            width: 100%;
-            max-width: 500px;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+            border: 3px solid var(--text);
+            padding: 40px;
+            background: var(--bg);
         }
+
         h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin: 0 0 30px;
+            border-bottom: 5px solid var(--accent);
+            display: inline-block;
         }
+
         .tabs {
             display: flex;
-            justify-content: space-around;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #ddd;
+            gap: 10px;
+            margin-bottom: 30px;
         }
+
         .tab-btn {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: none;
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--text);
             background: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: #7f8c8d;
+            cursor: pointer;
+            font-weight: 800;
+            text-transform: uppercase;
             transition: 0.3s;
         }
+
         .tab-btn.active {
-            color: var(--accent-color);
-            border-bottom: 3px solid var(--accent-color);
+            background-color: var(--text);
+            color: var(--bg);
         }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+
         .input-group {
             margin-bottom: 20px;
         }
+
         label {
             display: block;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.8rem;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #34495e;
+            letter-spacing: 1px;
         }
+
         input {
             width: 100%;
             padding: 12px;
+            border: 2px solid var(--text);
             box-sizing: border-box;
-            border-radius: 10px;
-            border: 1px solid #bdc3c7;
-            font-size: 16px;
+            font-size: 1rem;
+            outline: none;
         }
-        button {
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button.main-btn {
             width: 100%;
-            padding: 15px;
-            background-color: var(--orange-color);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
+            padding: 18px;
+            background-color: var(--accent);
+            color: var(--text);
+            border: 2px solid var(--text);
+            font-weight: 900;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #e67e22;
-        }
-        button.auto-btn {
-            background-color: var(--accent-color);
-        }
-        button.auto-btn:hover {
-            background-color: #219150;
-        }
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f0f3f1;
-            border-radius: 15px;
-            border-left: 5px solid var(--accent-color);
-        }
-        .result-box h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 18px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-        }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-size: 15px;
-        }
-        .result-value {
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-        .visual-area {
-            text-align: center;
-            margin-top: 25px;
-        }
-        .nozzle-sketch {
-            font-family: monospace;
-            white-space: pre;
-            background: #2c3e50;
-            color: #ecf0f1;
-            padding: 15px;
-            border-radius: 10px;
-            display: inline-block;
-            line-height: 1.2;
-        }
-        .error {
-            color: #e74c3c;
-            font-size: 14px;
+            font-size: 1.1rem;
             margin-top: 10px;
-            text-align: center;
+            transition: 0.3s;
         }
+
+        button.main-btn:hover {
+            background-color: var(--text);
+            color: var(--bg);
+        }
+
+        .result-section {
+            margin-top: 40px;
+            border-top: 2px solid #ddd;
+            padding-top: 30px;
+        }
+
+        .result-section h3 {
+            text-transform: uppercase;
+            font-weight: 900;
+            margin-bottom: 20px;
+        }
+
+        .res-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .res-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid var(--accent);
+        }
+
+        .res-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .res-val {
+            font-size: 1.2rem;
+            font-weight: 900;
+        }
+
+        .nozzle-draw {
+            margin-top: 30px;
+            background: var(--text);
+            color: var(--accent);
+            padding: 20px;
+            font-family: monospace;
+            text-align: center;
+            white-space: pre;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🚀 Rocket Lab</h1>
+    <a href="/" class="nav-back">← BACK TO DASHBOARD</a>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('manual')">수동 계산</button>
-        <button class="tab-btn" onclick="openTab('auto')">자동 설계</button>
-    </div>
+    <div class="container">
+        <h1>Nozzle</h1>
 
-    <!-- 1. 수동 계산 탭 -->
-    <div id="manual" class="tab-content active">
-        <div class="input-group">
-            <label>연료 (고정)</label>
-            <input type="text" value="KSNB Fine" disabled>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('manual')">Manual</button>
+            <button class="tab-btn" onclick="openTab('auto')">Auto</button>
         </div>
-        <div class="input-group">
-            <label>챔버 내경 (mm)</label>
-            <input type="number" id="m_inner" placeholder="예: 50">
-        </div>
-        <div class="input-group">
-            <label>챔버 길이 (mm)</label>
-            <input type="number" id="m_length" placeholder="예: 200">
-        </div>
-        <div class="input-group">
-            <label>외경 (mm)</label>
-            <input type="number" id="m_outer" placeholder="예: 70">
-        </div>
-        <div class="input-group">
-            <label>코어 직경 (mm)</label>
-            <input type="number" id="m_core" placeholder="예: 20">
-        </div>
-        <button onclick="calculateManual()">🚀 결과 확인</button>
-        <div id="m_error" class="error"></div>
 
-        <div id="m_result" class="result-box" style="display:none;">
-            <h3>📊 계산 결과</h3>
-            <div class="result-item"><span>예상 추력</span><span class="result-value" id="res_thrust"></span></div>
-            <div class="result-item"><span>연소 시간</span><span class="result-value" id="res_time"></span></div>
-            <div class="result-item"><span>챔버 압력</span><span class="result-value" id="res_pressure"></span></div>
-            <div class="result-item"><span>비추력 (Isp)</span><span class="result-value" id="res_isp"></span></div>
+        <!-- Manual Tab -->
+        <div id="manual" class="tab-content active">
+            <div class="input-group">
+                <label>Fuel Type</label>
+                <input type="text" value="KSNB FINE" disabled style="background: #eee;">
+            </div>
+            <div class="input-group">
+                <label>Chamber Inner ID (mm)</label>
+                <input type="number" id="m_inner">
+            </div>
+            <div class="input-group">
+                <label>Chamber Length (mm)</label>
+                <input type="number" id="m_length">
+            </div>
+            <button class="main-btn" onclick="runManual()">Calculate</button>
         </div>
-    </div>
 
-    <!-- 2. 자동 설계 탭 -->
-    <div id="auto" class="tab-content">
-        <div class="input-group">
-            <label>목표 추력 (N)</label>
-            <input type="number" id="a_thrust" placeholder="예: 500">
+        <!-- Auto Tab -->
+        <div id="auto" class="tab-content">
+            <div class="input-group">
+                <label>Target Thrust (N)</label>
+                <input type="number" id="a_thrust">
+            </div>
+            <button class="main-btn" style="background-color: var(--text); color: var(--bg);" onclick="runAuto()">Generate Design</button>
         </div>
-        <div class="input-group">
-            <label>로켓 길이 (mm)</label>
-            <input type="number" id="a_length" placeholder="예: 1000">
-        </div>
-        <div class="input-group">
-            <label>로켓 외부 직경 (mm)</label>
-            <input type="number" id="a_diameter" placeholder="예: 100">
-        </div>
-        <button class="auto-btn" onclick="designAuto()">🤖 최적 설계 추천</button>
-        <div id="a_error" class="error"></div>
 
-        <div id="a_result" class="result-box" style="display:none;">
-            <h3>🔩 챔버 및 오링 추천</h3>
-            <div class="result-item"><span>챔버 내경</span><span class="result-value" id="rec_inner"></span></div>
-            <div class="result-item"><span>챔버 외경</span><span class="result-value" id="rec_outer"></span></div>
-            <div class="result-item"><span>추천 오링 규격</span><span class="result-value" id="rec_oring"></span></div>
-            <div class="result-item"><span>오링 내경/두께</span><span class="result-value" id="rec_oring_size"></span></div>
+        <!-- Results -->
+        <div id="results" class="result-section" style="display:none;">
+            <h3 id="res_title">Analysis Results</h3>
+            <div class="res-grid" id="res_container">
+                <!-- Dynamic Content -->
+            </div>
             
-            <h3>📐 노즐 설계 상세</h3>
-            <div class="result-item"><span>목(Throat) 직경</span><span class="result-value" id="rec_throat"></span></div>
-            <div class="result-item"><span>출구(Exit) 직경</span><span class="result-value" id="rec_exit"></span></div>
-            <div class="result-item"><span>노즐 길이</span><span class="result-value" id="rec_n_length"></span></div>
-            <div class="result-item"><span>확장각</span><span class="result-value">15 °</span></div>
-        </div>
-    </div>
-
-    <!-- 공통 노즐 시각화 영역 -->
-    <div id="visual" class="visual-area" style="display:none;">
-        <div class="nozzle-sketch" id="sketch">
+            <div class="nozzle-draw">
         /\
        /  \
       /    \
@@ -230,111 +216,49 @@
       \    /
        \  /
         \/
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function openTab(tabName) {
-        const contents = document.getElementsByClassName('tab-content');
-        const buttons = document.getElementsByClassName('tab-btn');
-        for (let content of contents) content.classList.remove('active');
-        for (let btn of buttons) btn.classList.remove('active');
-        
-        document.getElementById(tabName).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    // 오링 규격 데이터 (AS568 기반 예시)
-    const oringData = [
-        {name: "AS568-214", id: 24.99, cs: 3.53},
-        {name: "AS568-218", id: 31.34, cs: 3.53},
-        {name: "AS568-222", id: 37.69, cs: 3.53},
-        {name: "AS568-226", id: 50.39, cs: 3.53},
-        {name: "AS568-230", id: 63.09, cs: 3.53},
-        {name: "AS568-234", id: 75.79, cs: 3.53}
-    ];
-
-    function calculateManual() {
-        const inner = parseFloat(document.getElementById('m_inner').value);
-        const length = parseFloat(document.getElementById('m_length').value);
-        const outer = parseFloat(document.getElementById('m_outer').value);
-        const core = parseFloat(document.getElementById('m_core').value);
-        const errorDiv = document.getElementById('m_error');
-
-        if (!inner || !length || !outer || !core) {
-            errorDiv.innerText = "모든 값을 입력해주세요.";
-            return;
-        }
-        if (core >= inner) {
-            errorDiv.innerText = "코어 직경은 내경보다 작아야 합니다.";
-            return;
+    <script>
+        function openTab(name) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(name).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
 
-        errorDiv.innerText = "";
-        
-        // 엑셀 SRM_2023 간략 로직 반영
-        const thrust = (inner * length * 0.05).toFixed(1);
-        const pressure = (inner * 0.08).toFixed(2);
-        const time = (length / 80).toFixed(1);
-        const isp = 180;
-
-        document.getElementById('res_thrust').innerText = thrust + " N";
-        document.getElementById('res_pressure').innerText = pressure + " MPa";
-        document.getElementById('res_time').innerText = time + " s";
-        document.getElementById('res_isp').innerText = isp + " s";
-
-        document.getElementById('m_result').style.display = "block";
-        document.getElementById('visual').style.display = "block";
-    }
-
-    function designAuto() {
-        const targetThrust = parseFloat(document.getElementById('a_thrust').value);
-        const rocketLen = parseFloat(document.getElementById('a_length').value);
-        const rocketDia = parseFloat(document.getElementById('a_diameter').value);
-        const errorDiv = document.getElementById('a_error');
-
-        if (!targetThrust || !rocketLen || !rocketDia) {
-            errorDiv.innerText = "목표값들을 입력해주세요.";
-            return;
+        function runManual() {
+            const inner = document.getElementById('m_inner').value;
+            if(!inner) return;
+            showResults([
+                {label: "Thrust", val: (inner * 1.5).toFixed(1) + " N"},
+                {label: "Pressure", val: (inner * 0.05).toFixed(2) + " MPa"},
+                {label: "Isp", val: "185 s"}
+            ]);
         }
 
-        errorDiv.innerText = "";
-
-        // 자동 설계 로직 (추력 기반 역산)
-        const recInner = Math.sqrt(targetThrust / 0.1).toFixed(1);
-        const recOuter = (parseFloat(recInner) + 10).toFixed(1);
-        
-        // 가장 적합한 오링 찾기 (챔버 외경 기준)
-        let bestOring = oringData[0];
-        let minDiff = Math.abs(bestOring.id - recOuter);
-        
-        for (let oring of oringData) {
-            let diff = Math.abs(oring.id - recOuter);
-            if (diff < minDiff) {
-                minDiff = diff;
-                bestOring = oring;
-            }
+        function runAuto() {
+            const thrust = document.getElementById('a_thrust').value;
+            if(!thrust) return;
+            const inner = Math.sqrt(thrust * 10).toFixed(1);
+            showResults([
+                {label: "Rec. Inner ID", val: inner + " mm"},
+                {label: "Rec. O-Ring", val: "AS568-214"},
+                {label: "Throat Dia", val: (inner * 0.4).toFixed(1) + " mm"}
+            ]);
         }
 
-        // 노즐 상세 설계
-        const throat = (recInner * 0.35).toFixed(1);
-        const exit = (recInner * 0.75).toFixed(1);
-        const nLength = (recInner * 1.2).toFixed(1);
-
-        document.getElementById('rec_inner').innerText = recInner + " mm";
-        document.getElementById('rec_outer').innerText = recOuter + " mm";
-        document.getElementById('rec_oring').innerText = bestOring.name;
-        document.getElementById('rec_oring_size').innerText = `${bestOring.id} / ${bestOring.cs} mm`;
-        
-        document.getElementById('rec_throat').innerText = throat + " mm";
-        document.getElementById('rec_exit').innerText = exit + " mm";
-        document.getElementById('rec_n_length').innerText = nLength + " mm";
-
-        document.getElementById('a_result').style.display = "block";
-        document.getElementById('visual').style.display = "block";
-    }
-</script>
-
+        function showResults(data) {
+            const container = document.getElementById('res_container');
+            container.innerHTML = data.map(d => `
+                <div class="res-item">
+                    <div class="res-label">${d.label}</div>
+                    <div class="res-val">${d.val}</div>
+                </div>
+            `).join('');
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
 </body>
 </html>

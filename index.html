@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICARUS | Eco-Friendly Rocket Lab</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --accent: #ffcc00;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 80px 20px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .accent-line {
+            width: 40px;
+            height: 4px;
+            background-color: var(--accent);
+            margin: 20px auto;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg);
+            border: 2px solid var(--text);
+            padding: 40px 30px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+        }
+
+        .card:hover {
+            background-color: var(--text);
+            color: var(--bg);
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            font-size: 1.6rem;
+            margin: 0 0 10px 0;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin: 0 0 30px 0;
+        }
+
+        .card .arrow {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .card.active {
+            border-color: var(--accent);
+            border-width: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.4;
+        }
+
+        @media (max-width: 600px) {
+            header h1 { font-size: 2.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ICARUS</h1>
+        <div class="accent-line"></div>
+        <p>Integrated eco-friendly rocket simulation platform</p>
+    </header>
+
+    <main>
+        <a href="#" class="card">
+            <div class="card-icon">📘</div>
+            <h2>Theory</h2>
+            <p>Rocket science basics and safety protocols.</p>
+            <div class="arrow">→</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="card-icon">🚀</div>
+            <h2>Trajectory</h2>
+            <p>Flight simulation & carbon footprint tracking.</p>
+            <div class="arrow">→</div>
+        </a>
+
+        <a href="/nozzle.html" class="card active">
+            <div class="card-icon">🔥</div>
+            <h2 style="color: var(--accent);">Nozzle</h2>
+            <p>Automated design & O-ring recommendation system.</p>
+            <div class="arrow">→</div>
+        </a>
+
+        <a href="#" class="card">
+            <div class="card-icon">🛠</div>
+            <h2>Blueprint</h2>
+            <p>Structural visualization and data verification.</p>
+            <div class="arrow">→</div>
+        </a>
+    </main>
+
+    <footer>
+        &copy; 2026 ICARUS PROJECT. BEYOND THE LIMITS.
+    </footer>
+
+</body>
+</html>

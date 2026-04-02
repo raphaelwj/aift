@@ -1,7 +1,7 @@
 {
-  "name": "rocket-lab",
+  "name": "icarus-rocket-lab",
   "version": "1.0.0",
-  "description": "Rocket nozzle and design automation tool",
+  "description": "ICARUS: Eco-Friendly Rocket Simulation Platform",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
