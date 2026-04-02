@@ -1,49 +1,37 @@
-// 로컬 환경에서 .env 파일을 사용하기 위함 (Render 배포 시에는 Render의 환경변수를 자동으로 사용함)
 require('dotenv').config();
-
 const express = require('express');
 const { Pool } = require('pg');
+const path = require('path');
 
 const app = express();
-// Render는 process.env.PORT 환경변수를 주입하므로 이를 우선적으로 사용해야 합니다.
 const port = process.env.PORT || 3000;
 
-// PostgreSQL(Neon) 커넥션 풀 설정
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Neon DB 연결 시 필수적인 SSL 설정입니다.
+    rejectUnauthorized: false
   }
 });
+
+app.use(express.static(path.join(__dirname)));
 
 app.get('/', async (req, res) => {
   try {
-    // 1. DB 연결
     const client = await pool.connect();
-    
-    // 2. test 테이블에서 name 레코드 1개 조회
     const result = await client.query('SELECT name FROM test LIMIT 1');
-    client.release(); // 연결 반환
+    client.release();
 
-    // 3. 데이터가 있을 경우와 없을 경우 분기 처리
     if (result.rows.length > 0) {
       const name = result.rows[0].name;
-      res.send(`HELLO ${name}`);
+      res.send(`<h1>Rocket Lab 서버 작동 중!</h1><p>DB 연결 확인: HELLO ${name}</p><p><a href="/nozzle.html">노즐 설계 도구 바로가기</a></p>`);
     } else {
-      res.send('HELLO (테이블에 데이터가 없습니다)');
+      res.send('<h1>Rocket Lab 서버 작동 중!</h1><p>HELLO (테이블에 데이터가 없습니다)</p><p><a href="/nozzle.html">노즐 설계 도구 바로가기</a></p>');
     }
-    
   } catch (error) {
-    console.error('DB 연결 또는 쿼리 에러:', error);
-    res.status(500).send('서버에서 데이터베이스를 조회하는 중 오류가 발생했습니다.');
+    res.status(500).send('<h1>서버 작동 중</h1><p>DB 연결에 실패했습니다. <a href="/nozzle.html">설계 도구로 이동</a></p>');
   }
 });
 
-const path = require('path'); // 파일 맨 위쪽에 이 줄이 없다면 추가해 주세요.
-
-// ... 기존 코드들 ...
-
-// 이 부분을 추가해 줍니다!
 app.get('/nozzle.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'nozzle.html'));
 });
