@@ -22,6 +22,10 @@ app.get('/nozzle.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'nozzle.html'));
 });
 
+app.get('/blueprint.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'blueprint.html'));
+});
+
 // Basic Health Check / DB Test
 app.get('/status', async (req, res) => {
   try {

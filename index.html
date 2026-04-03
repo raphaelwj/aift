@@ -20,31 +20,32 @@
         }
 
         header {
-            padding: 80px 20px 40px;
+            padding: 90px 20px 50px;
             text-align: center;
         }
 
         header h1 {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 900;
-            letter-spacing: -2px;
+            letter-spacing: -3px;
             margin: 0;
             text-transform: uppercase;
         }
 
         .accent-line {
-            width: 40px;
-            height: 4px;
+            width: 50px;
+            height: 6px;
             background-color: var(--accent);
-            margin: 20px auto;
+            margin: 25px auto;
+            border-radius: 3px;
         }
 
         header p {
             font-size: 1rem;
             color: #666;
-            margin-top: 10px;
+            margin-top: 15px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
         main {
@@ -52,68 +53,71 @@
             margin: 0 auto;
             padding: 40px 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
         }
 
         .card {
             background: var(--bg);
-            border: 2px solid var(--text);
-            padding: 40px 30px;
+            border: 3px solid var(--text);
+            padding: 45px 35px;
             text-decoration: none;
             color: var(--text);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
+            border-radius: 30px; /* 곡선 추가 */
+            overflow: hidden;
         }
 
         .card:hover {
             background-color: var(--text);
             color: var(--bg);
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
         }
 
         .card-icon {
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            margin-bottom: 25px;
         }
 
         .card h2 {
-            font-size: 1.6rem;
-            margin: 0 0 10px 0;
+            font-size: 1.8rem;
+            margin: 0 0 12px 0;
             font-weight: 800;
             text-transform: uppercase;
         }
 
         .card p {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             opacity: 0.7;
-            margin: 0 0 30px 0;
+            margin: 0 0 35px 0;
         }
 
         .card .arrow {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
-            font-size: 1.2rem;
+            bottom: 35px;
+            right: 35px;
+            font-size: 1.4rem;
             font-weight: bold;
         }
 
         .card.active {
             border-color: var(--accent);
-            border-width: 4px;
+            border-width: 5px;
         }
 
         footer {
             text-align: center;
-            padding: 80px 20px;
+            padding: 100px 20px;
             font-size: 0.8rem;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
             opacity: 0.4;
         }
 
         @media (max-width: 600px) {
-            header h1 { font-size: 2.8rem; }
+            header h1 { font-size: 3rem; }
         }
     </style>
 </head>
@@ -147,7 +151,7 @@
             <div class="arrow">→</div>
         </a>
 
-        <a href="#" class="card">
+        <a href="/blueprint.html" class="card">
             <div class="card-icon">🛠</div>
             <h2>Blueprint</h2>
             <p>Structural visualization and data verification.</p>
