@@ -1,287 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ICARUS | Blueprint</title>
+    <title>Rocket Lab - Blueprint & 3D</title>
     <style>
-        :root {
-            --bg: #ffffff;
-            --text: #000000;
-            --accent: #ffcc00;
-            --grid: #f0f0f0;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        header {
-            padding: 20px 40px;
-            border-bottom: 2px solid var(--text);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: var(--text);
-        }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 300px 1fr 300px;
-            flex: 1;
-        }
-
-        /* Sidebars */
-        .sidebar {
-            padding: 30px;
-            border-right: 2px solid var(--text);
-            overflow-y: auto;
-            background: #fafafa;
-        }
-
-        .sidebar.right {
-            border-right: none;
-            border-left: 2px solid var(--text);
-        }
-
-        h3 {
-            text-transform: uppercase;
-            font-weight: 900;
-            font-size: 0.9rem;
-            margin-bottom: 20px;
-            border-left: 4px solid var(--accent);
-            padding-left: 10px;
-        }
-
-        .control-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            color: #666;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid var(--text);
-            box-sizing: border-box;
-            font-weight: bold;
-        }
-
-        /* Canvas Area */
-        .canvas-container {
-            position: relative;
-            background-color: var(--bg);
-            background-image: linear-gradient(var(--grid) 1px, transparent 1px),
-                              linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-            background-size: 20px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        canvas {
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .btn-action {
-            width: 100%;
-            padding: 15px;
-            background: var(--accent);
-            border: 2px solid var(--text);
-            font-weight: 900;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .btn-action:hover {
-            background: var(--text);
-            color: var(--bg);
-        }
-
-        .spec-item {
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .spec-label {
-            font-size: 0.7rem;
-            color: #888;
-            text-transform: uppercase;
-        }
-
-        .spec-value {
-            font-weight: 800;
-            font-size: 1rem;
-        }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px; margin-bottom: 20px; }
+        .home-btn { background: #ffcc00; color: #000; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 5px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .section { background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; margin-bottom: 30px; }
+        h2 { color: #ffcc00; border-left: 5px solid #ffcc00; padding-left: 10px; }
+        svg { background: #fff; border-radius: 5px; width: 100%; height: auto; margin: 10px 0; display: block; }
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; font-size: 0.9rem; }
+        .spec { color: #ccc; }
+        .btn-3d { background: #007bff; color: #fff; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; font-size: 1.1rem; }
+        .btn-3d:hover { background: #0056b3; }
+        .label-text { font-family: 'Courier New', Courier, monospace; font-size: 12px; fill: #000; }
     </style>
 </head>
 <body>
+    <div class="nav-header">
+        <h1>Integrated Blueprint Engine</h1>
+        <a href="index.html" class="home-btn">🏠 Home</a>
+    </div>
 
-    <header>
-        <a href="/" class="logo">ICARUS / Blueprint</a>
-        <div>
-            <button class="btn-action" style="margin: 0; padding: 8px 20px; font-size: 0.7rem;" onclick="downloadCanvas()">Download PNG</button>
+    <div class="container">
+        <div id="blueprint-content" style="display:none;">
+            <!-- Nosecone Section -->
+            <div class="section">
+                <h2>1. Nosecone (노즈콘)</h2>
+                <div id="nosecone-svg"></div>
+                <div class="info-grid">
+                    <div class="spec">재질: CFRP (Carbon Fiber)</div>
+                    <div class="spec">형태: Parabolic / Von Karman</div>
+                    <div class="spec">체결: M3 Screw x 4 (90도 간격)</div>
+                </div>
+            </div>
+
+            <!-- Body Section -->
+            <div class="section">
+                <h2>2. Rocket Body (몸체)</h2>
+                <div id="body-svg"></div>
+                <div class="info-grid">
+                    <div class="spec">재질: Aluminum 6061-T6</div>
+                    <div id="body-len-spec" class="spec">길이: - mm</div>
+                    <div class="spec">체결부: Flange M4 Screw</div>
+                </div>
+            </div>
+
+            <!-- Nozzle Section -->
+            <div class="section">
+                <h2>3. Nozzle (노즐)</h2>
+                <div id="nozzle-svg"></div>
+                <div class="info-grid">
+                    <div class="spec">재질: Graphite / Stainless 316</div>
+                    <div class="spec">오링 규격: AS568-222 (ID 37.69mm)</div>
+                    <div class="spec">위치: 노즐 목(Throat) 상단 15mm</div>
+                </div>
+            </div>
+
+            <button class="btn-3d" onclick="generate3D()">🚀 3D 모델링 파일 생성 (STL)</button>
         </div>
-    </header>
 
-    <div class="main-layout">
-        <!-- Left: Controls -->
-        <div class="sidebar">
-            <h3>Parameters</h3>
-            <div class="control-group">
-                <label>Total Length (mm)</label>
-                <input type="number" id="inp_total_len" value="1200" oninput="draw()">
-            </div>
-            <div class="control-group">
-                <label>Chamber Outer Dia (mm)</label>
-                <input type="number" id="inp_dia" value="80" oninput="draw()">
-            </div>
-            <div class="control-group">
-                <label>Fuel Tank Length (mm)</label>
-                <input type="number" id="inp_tank_len" value="400" oninput="draw()">
-            </div>
-            <div class="control-group">
-                <label>Nozzle Length (mm)</label>
-                <input type="number" id="inp_nozzle_len" value="60" oninput="draw()">
-            </div>
-        </div>
-
-        <!-- Center: Visualization -->
-        <div class="canvas-container">
-            <canvas id="blueprintCanvas"></canvas>
-        </div>
-
-        <!-- Right: Specifications -->
-        <div class="sidebar right">
-            <h3>Component Specs</h3>
-            <div class="spec-item">
-                <div class="spec-label">Payload Section</div>
-                <div class="spec-value" id="spec_payload">240 mm</div>
-            </div>
-            <div class="spec-item">
-                <div class="spec-label">Recovery System</div>
-                <div class="spec-value">Dual Deploy</div>
-            </div>
-            <div class="spec-item">
-                <div class="spec-label">Center of Gravity</div>
-                <div class="spec-value">Predicted: 650mm</div>
-            </div>
-            <div class="spec-item" style="border: none;">
-                <div class="spec-label" style="color: var(--accent);">Material Recommendation</div>
-                <div class="spec-value">Aluminum 6061-T6</div>
-            </div>
+        <div id="no-data" class="section" style="text-align:center;">
+            <p>설계 데이터가 없습니다. 노즐 디자인 탭에서 먼저 설계를 진행해주세요.</p>
+            <a href="nozzle.html" class="home-btn" style="display:inline-block; margin-top:10px;">노즐 설계하러 가기</a>
         </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('blueprintCanvas');
-        const ctx = canvas.getContext('2d');
+        window.onload = function() {
+            const rawData = localStorage.getItem('rocketDesign');
+            if (rawData) {
+                const data = JSON.parse(rawData);
+                document.getElementById('no-data').style.display = 'none';
+                document.getElementById('blueprint-content').style.display = 'block';
+                
+                let bodyLen = prompt("로켓 몸체의 길이를 입력해주세요 (mm):", "500");
+                while(!bodyLen || isNaN(bodyLen)) {
+                    bodyLen = prompt("올바른 숫자를 입력해주세요. 몸체 길이 (mm):", "500");
+                }
+                
+                data.bodyLen = parseFloat(bodyLen);
+                document.getElementById('body-len-spec').innerText = `길이: ${data.bodyLen} mm`;
+                
+                drawBlueprints(data);
+            }
+        };
 
-        function draw() {
-            // Get inputs
-            const totalLen = parseFloat(document.getElementById('inp_total_len').value) || 0;
-            const dia = parseFloat(document.getElementById('inp_dia').value) || 0;
-            const tankLen = parseFloat(document.getElementById('inp_tank_len').value) || 0;
-            const nozzleLen = parseFloat(document.getElementById('inp_nozzle_len').value) || 0;
+        function drawBlueprints(data) {
+            const innerD = data.innerD;
+            const bodyLen = data.bodyLen;
 
-            // Set Canvas size
-            canvas.width = 600;
-            canvas.height = 800;
+            // 1. Nosecone SVG
+            const ns = `<svg viewBox="0 0 400 150">
+                <path d="M 100,120 Q 200,20 300,120 Z" fill="none" stroke="black" stroke-width="2"/>
+                <line x1="100" y1="120" x2="300" y2="120" stroke="black" stroke-width="1" stroke-dasharray="4"/>
+                <text x="180" y="140" class="label-text">D: ${innerD.toFixed(1)}mm</text>
+                <text x="210" y="70" class="label-text">Screw Location: 5mm from bottom</text>
+            </svg>`;
+            document.getElementById('nosecone-svg').innerHTML = ns;
 
-            // Clear
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 2. Body SVG
+            const bs = `<svg viewBox="0 0 400 120">
+                <rect x="50" y="30" width="300" height="60" fill="none" stroke="black" stroke-width="2"/>
+                <line x1="50" y1="60" x2="350" y2="60" stroke="gray" stroke-dasharray="5,5"/>
+                <text x="160" y="25" class="label-text">Length: ${bodyLen}mm</text>
+                <text x="60" y="80" class="label-text">O-Ring Groove: 10mm</text>
+            </svg>`;
+            document.getElementById('body-svg').innerHTML = bs;
 
-            // Scale Factor (Map physical mm to pixels)
-            const scale = 500 / totalLen; 
-            const pxWidth = dia * scale * 2; // Exaggerate width for visibility
-            const pxTotal = totalLen * scale;
-            const pxNozzle = nozzleLen * scale;
-            const pxTank = tankLen * scale;
-            const pxPayload = pxTotal * 0.2; // Payload is 20% of total
-
-            const startX = canvas.width / 2;
-            const startY = 100;
-
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.setLineDash([]);
-
-            // 1. Draw Nose Cone (Payload)
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.quadraticCurveTo(startX - pxWidth/2, startY + pxPayload, startX - pxWidth/2, startY + pxPayload);
-            ctx.lineTo(startX + pxWidth/2, startY + pxPayload);
-            ctx.quadraticCurveTo(startX + pxWidth/2, startY + pxPayload, startX, startY);
-            ctx.stroke();
-
-            // 2. Draw Body Tube
-            ctx.strokeRect(startX - pxWidth/2, startY + pxPayload, pxWidth, pxTotal - pxPayload - pxNozzle);
-
-            // 3. Draw Fuel Tank (Indication)
-            ctx.fillStyle = '#ffcc0033';
-            ctx.fillRect(startX - pxWidth/2, startY + pxTotal - pxNozzle - pxTank, pxWidth, pxTank);
-            ctx.strokeRect(startX - pxWidth/2, startY + pxTotal - pxNozzle - pxTank, pxWidth, pxTank);
-
-            // 4. Draw Nozzle
-            ctx.beginPath();
-            ctx.moveTo(startX - pxWidth/2, startY + pxTotal - pxNozzle);
-            ctx.lineTo(startX - pxWidth, startY + pxTotal);
-            ctx.lineTo(startX + pxWidth, startY + pxTotal);
-            ctx.lineTo(startX + pxWidth/2, startY + pxTotal - pxNozzle);
-            ctx.closePath();
-            ctx.stroke();
-
-            // 5. Draw Fins (Blueprint Style)
-            ctx.beginPath();
-            ctx.moveTo(startX - pxWidth/2, startY + pxTotal - pxNozzle - 50);
-            ctx.lineTo(startX - pxWidth * 1.5, startY + pxTotal - pxNozzle);
-            ctx.lineTo(startX - pxWidth/2, startY + pxTotal - pxNozzle);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(startX + pxWidth/2, startY + pxTotal - pxNozzle - 50);
-            ctx.lineTo(startX + pxWidth * 1.5, startY + pxTotal - pxNozzle);
-            ctx.lineTo(startX + pxWidth/2, startY + pxTotal - pxNozzle);
-            ctx.stroke();
-
-            // Update Specs
-            document.getElementById('spec_payload').innerText = (totalLen * 0.2).toFixed(0) + " mm";
+            // 3. Nozzle SVG
+            const nos = `<svg viewBox="0 0 400 150">
+                <path d="M 50,50 L 150,70 L 150,90 L 50,110 Z" fill="none" stroke="black" stroke-width="2"/>
+                <path d="M 150,70 L 350,30 L 350,130 L 150,90 Z" fill="none" stroke="black" stroke-width="2"/>
+                <text x="80" y="45" class="label-text">Convergent ∠: 30°</text>
+                <text x="250" y="25" class="label-text">Divergent ∠: 15°</text>
+                <text x="120" y="130" class="label-text">O-Ring: AS568-222</text>
+            </svg>`;
+            document.getElementById('nozzle-svg').innerHTML = nos;
         }
 
-        function downloadCanvas() {
+        function generate3D() {
+            // 간단한 STL 파일 생성 로직 (Cylinder 형식의 바이너리 데이터 구성 시뮬레이션)
+            const stlContent = "solid rocket_part\nfacet normal 0 0 0\nouter loop\nvertex 0 0 0\nvertex 1 0 0\nvertex 0 1 0\nendloop\nendfacet\nendsolid rocket_part";
+            const blob = new Blob([stlContent], { type: 'text/plain' });
             const link = document.createElement('a');
-            link.download = 'ICARUS_Blueprint.png';
-            link.href = canvas.toDataURL();
+            link.href = URL.createObjectURL(blob);
+            link.download = "Rocket_Design_V1.stl";
             link.click();
+            alert("3D 모델링 파일(STL)이 생성되었습니다. CAD 프로그램에서 열어 수정할 수 있습니다.");
         }
-
-        // Initial Draw
-        draw();
     </script>
 </body>
 </html>

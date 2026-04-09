@@ -2,393 +2,108 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket Lab - 노즐 및 정밀 자동 설계</title>
+    <title>Rocket Lab - Nozzle Design</title>
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #27ae60;
-            --orange-color: #f39c12;
-            --bg-color: #f4f7f6;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-        }
-        .tabs {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #ddd;
-        }
-        .tab-btn {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: #7f8c8d;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            color: var(--accent-color);
-            border-bottom: 3px solid var(--accent-color);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #34495e;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border-radius: 10px;
-            border: 1px solid #bdc3c7;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            background-color: var(--orange-color);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #e67e22;
-        }
-        button.auto-btn {
-            background-color: var(--accent-color);
-        }
-        button.auto-btn:hover {
-            background-color: #219150;
-        }
-        .result-box {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f0f3f1;
-            border-radius: 15px;
-            border-left: 5px solid var(--accent-color);
-        }
-        .result-box h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-            font-size: 18px;
-            border-bottom: 1px solid #ccc;
-            padding-bottom: 5px;
-        }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-size: 15px;
-        }
-        .result-value {
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-        .error {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        /* 설계도 영역 스타일 */
-        #visual {
-            width: 100%;
-            max-width: 800px;
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-        .drawing-container {
-            width: 100%;
-            min-width: 600px;
-            text-align: center;
-        }
-        .drawing-container h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-        #nozzle-svg {
-            background-color: #fff;
-            border: 1px solid black;
-        }
-        .dim-line { stroke: #555; stroke-width: 1; marker-end: url(#arrowhead); marker-start: url(#arrowhead); }
-        .dim-text { font-size: 12px; fill: #000; font-weight: bold; }
-        .angle-text { fill: #d35400; font-size: 12px; font-weight: bold; }
-        .guide-line { stroke: #ccc; stroke-width: 1; stroke-dasharray: 4,4; }
+        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px; margin-bottom: 20px; }
+        .home-btn { background: #ffcc00; color: #000; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 5px; }
+        .container { display: flex; gap: 20px; }
+        .panel { flex: 1; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; }
+        h2 { color: #ffcc00; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
+        button { flex: 1; background: #ffcc00; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        button:hover { background: #fff; }
+        #blueprint-btn { background: #28a745; color: #fff; margin-top: 20px; display: none; }
+        svg { background: #fff; border-radius: 5px; width: 100%; height: auto; margin-top: 10px; }
+        .result-box { margin-top: 15px; padding: 10px; background: #222; border-left: 4px solid #ffcc00; }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h1>🚀 Rocket Lab</h1>
-
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab('manual')">수동 계산</button>
-        <button class="tab-btn" onclick="openTab('auto')">자동 설계</button>
+    <div class="nav-header">
+        <h1>Nozzle Design Engine</h1>
+        <a href="index.html" class="home-btn">🏠 Home</a>
     </div>
 
-    <!-- 1. 수동 계산 탭 -->
-    <div id="manual" class="tab-content active">
-        <div class="input-group">
-            <label>연료 (고정)</label>
-            <input type="text" value="KSNB Fine" disabled>
-        </div>
-        <div class="input-group">
-            <label>챔버 내경 (mm)</label>
-            <input type="number" id="m_inner" value="50">
-        </div>
-        <div class="input-group">
-            <label>챔버 길이 (mm)</label>
-            <input type="number" id="m_length" value="200">
-        </div>
-        <div class="input-group">
-            <label>외경 (mm)</label>
-            <input type="number" id="m_outer" value="60">
-        </div>
-        <div class="input-group">
-            <label>코어 직경 (mm)</label>
-            <input type="number" id="m_core" value="20">
-        </div>
-        <button onclick="calculateManual()">🚀 결과 확인</button>
-        <div id="m_error" class="error"></div>
-
-        <div id="m_result" class="result-box" style="display:none;">
-            <h3>📊 예상 성능</h3>
-            <div class="result-item"><span>예상 추력</span><span class="result-value" id="res_thrust"></span></div>
-            <div class="result-item"><span>연소 시간</span><span class="result-value" id="res_time"></span></div>
-            <div class="result-item"><span>챔버 압력</span><span class="result-value" id="res_pressure"></span></div>
-            <div class="result-item"><span>비추력 (Isp)</span><span class="result-value" id="res_isp"></span></div>
-        </div>
-    </div>
-
-    <!-- 2. 자동 설계 탭 -->
-    <div id="auto" class="tab-content">
-        <div class="input-group">
-            <label>목표 추력 (N)</label>
-            <input type="number" id="a_thrust" value="500">
-        </div>
-        <div class="input-group">
-            <label>로켓 길이 (mm)</label>
-            <input type="number" id="a_length" value="1000">
-        </div>
-        <div class="input-group">
-            <label>로켓 외부 직경 (mm)</label>
-            <input type="number" id="a_diameter" value="100">
-        </div>
-        <button class="auto-btn" onclick="designAuto()">🤖 최적 설계 추천</button>
-        <div id="a_error" class="error"></div>
-
-        <div id="a_result" class="result-box" style="display:none;">
-            <h3>🔩 추천 규격</h3>
-            <div class="result-item"><span>챔버 내경/외경</span><span class="result-value" id="rec_chamber"></span></div>
-            <div class="result-item"><span>추천 오링</span><span class="result-value" id="rec_oring"></span></div>
+    <div class="container">
+        <div class="panel">
+            <h2>Design Input</h2>
+            <label>목표 추력 (N):</label>
+            <input type="number" id="targetThrust" placeholder="예: 100">
+            <button onclick="autoDesign()">자동 최적화 설계</button>
+            <hr style="border: 0.5px solid #333; margin: 20px 0;">
+            <label>수동 내경 (mm):</label>
+            <input type="number" id="innerD" placeholder="내경">
+            <label>수동 길이 (mm):</label>
+            <input type="number" id="length" placeholder="길이">
+            <button onclick="manualCalc()">수동 계산 및 도면 생성</button>
             
-            <h3>📐 노즐 설계 상세</h3>
-            <div class="result-item"><span>목(Throat) 직경</span><span class="result-value" id="rec_throat"></span></div>
-            <div class="result-item"><span>출구(Exit) 직경</span><span class="result-value" id="rec_exit"></span></div>
-            <div class="result-item"><span>확산부 길이</span><span class="result-value" id="rec_n_length"></span></div>
+            <div id="results" class="result-box" style="display:none;"></div>
+            <button id="blueprint-btn" onclick="goToBlueprint()">🎨 정밀 블루프린트 보기</button>
+        </div>
+
+        <div class="panel">
+            <h2>Schematic Preview</h2>
+            <div id="svgContainer"></div>
         </div>
     </div>
-</div>
 
-<!-- 설계도 시각화 영역 -->
-<div id="visual" style="display:none;">
-    <div class="drawing-container">
-        <h3>📐 노즐 정밀 설계도 (Engineering Blueprint)</h3>
-        <svg id="nozzle-svg" width="700" height="400" viewBox="0 0 700 400">
-            <defs>
-                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="5" refY="3.5" orient="auto">
-                    <polygon points="0 0, 10 3.5, 0 7" fill="#555" />
-                </marker>
-                <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
-                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#f0f0f0" stroke-width="0.5"/>
-                </pattern>
-                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                    <rect width="50" height="50" fill="url(#smallGrid)"/>
-                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e0e0e0" stroke-width="1"/>
-                </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-            <line x1="50" y1="200" x2="650" y2="200" class="guide-line" stroke="#aaa" />
-            <path id="nozzle-path" fill="none" stroke="black" stroke-width="2.5" />
-            <g id="dimension-group"></g>
-        </svg>
-        <p style="margin-top: 10px; font-size: 13px; color: #666;">* 본 도면은 입력 수치에 기반한 실제 비율 설계도입니다.</p>
-    </div>
-</div>
+    <script>
+        let currentDesign = {};
 
-<script>
-    function openTab(tabName) {
-        const contents = document.getElementsByClassName('tab-content');
-        const buttons = document.getElementsByClassName('tab-btn');
-        for (let content of contents) content.classList.remove('active');
-        for (let btn of buttons) btn.classList.remove('active');
-        document.getElementById(tabName).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
+        function autoDesign() {
+            const T = parseFloat(document.getElementById('targetThrust').value);
+            if (!T) return alert("목표 추력을 입력하세요.");
+            
+            const recInner = Math.sqrt(T / 0.1);
+            const throat = recInner * 0.35;
+            const exit = recInner * 0.75;
+            const length = recInner * 1.2;
 
-    const oringData = [
-        {name: "AS568-214", id: 24.99, cs: 3.53}, {name: "AS568-218", id: 31.34, cs: 3.53},
-        {name: "AS568-222", id: 37.69, cs: 3.53}, {name: "AS568-226", id: 50.39, cs: 3.53},
-        {name: "AS568-230", id: 63.09, cs: 3.53}, {name: "AS568-234", id: 75.79, cs: 3.53}
-    ];
-
-    function calculateManual() {
-        const inner = parseFloat(document.getElementById('m_inner').value);
-        const length = parseFloat(document.getElementById('m_length').value);
-        const outer = parseFloat(document.getElementById('m_outer').value);
-        const core = parseFloat(document.getElementById('m_core').value);
-        
-        if (!inner || !length || !outer || !core) return;
-        
-        document.getElementById('res_thrust').innerText = (inner * length * 0.05).toFixed(1) + " N";
-        document.getElementById('res_pressure').innerText = (inner * 0.08).toFixed(2) + " MPa";
-        document.getElementById('res_time').innerText = (length / 80).toFixed(1) + " s";
-        document.getElementById('res_isp').innerText = "180 s";
-        document.getElementById('m_result').style.display = "block";
-
-        updateDrawing({
-            inlet: inner, 
-            throat: inner * 0.4, 
-            exit: inner * 0.8, 
-            convLen: inner * 0.6, 
-            divLen: inner * 1.5
-        });
-    }
-
-    function designAuto() {
-        const thrust = parseFloat(document.getElementById('a_thrust').value);
-        if (!thrust) return;
-
-        const recInner = Math.sqrt(thrust / 0.1);
-        const throat = recInner * 0.35;
-        const exit = recInner * 0.75;
-        const nLen = recInner * 1.2;
-
-        document.getElementById('rec_chamber').innerText = `${recInner.toFixed(1)} / ${(recInner+10).toFixed(1)} mm`;
-        document.getElementById('rec_throat').innerText = throat.toFixed(1) + " mm";
-        document.getElementById('rec_exit').innerText = exit.toFixed(1) + " mm";
-        document.getElementById('rec_n_length').innerText = nLen.toFixed(1) + " mm";
-        document.getElementById('a_result').style.display = "block";
-
-        updateDrawing({
-            inlet: recInner, 
-            throat: throat, 
-            exit: exit, 
-            convLen: recInner * 0.6, 
-            divLen: nLen
-        });
-    }
-
-    function updateDrawing(d) {
-        const path = document.getElementById('nozzle-path');
-        const dimGroup = document.getElementById('dimension-group');
-        dimGroup.innerHTML = '';
-
-        // 스케일링 (가장 큰 치수가 화면의 250px 정도 되도록 조정)
-        const maxVal = Math.max(d.inlet, d.exit, d.divLen + d.convLen);
-        const scale = 250 / maxVal;
-        const cx = 350, cy = 200;
-
-        const xInlet = cx - (d.convLen * scale);
-        const xThroat = cx;
-        const xExit = cx + (d.divLen * scale);
-
-        const yInT = cy - (d.inlet/2 * scale), yInB = cy + (d.inlet/2 * scale);
-        const yThT = cy - (d.throat/2 * scale), yThB = cy + (d.throat/2 * scale);
-        const yExT = cy - (d.exit/2 * scale), yExB = cy + (d.exit/2 * scale);
-
-        // 노즐 외곽선
-        path.setAttribute('d', `M ${xInlet},${yInT} L ${xThroat},${yThT} L ${xExit},${yExT} M ${xInlet},${yInB} L ${xThroat},${yThB} L ${xExit},${yExB} M ${xInlet},${yInT} L ${xInlet},${yInB} M ${xExit},${yExT} L ${xExit},${yExB} M ${xThroat},${yThT} L ${xThroat},${yThB}`);
-
-        // 각도 계산
-        const convAng = (Math.atan((d.inlet-d.throat)/(2*d.convLen))*180/Math.PI).toFixed(1);
-        const divAng = (Math.atan((d.exit-d.throat)/(2*d.divLen))*180/Math.PI).toFixed(1);
-
-        function addDim(x1, y1, x2, y2, text, vertical=false) {
-            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-            line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-            line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-            line.setAttribute('class', 'dim-line');
-            dimGroup.appendChild(line);
-
-            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            txt.setAttribute('class', 'dim-text');
-            txt.setAttribute('text-anchor', 'middle');
-            if(vertical) {
-                txt.setAttribute('x', x1 - 10); txt.setAttribute('y', (y1+y2)/2 + 5);
-                txt.setAttribute('transform', `rotate(-90, ${x1-10}, ${(y1+y2)/2+5})`);
-            } else {
-                txt.setAttribute('x', (x1+x2)/2); txt.setAttribute('y', y1 + 18);
-            }
-            txt.textContent = text + "mm";
-            dimGroup.appendChild(txt);
+            document.getElementById('innerD').value = recInner.toFixed(2);
+            document.getElementById('length').value = length.toFixed(2);
+            
+            currentDesign = { innerD: recInner, length, throat, exit, type: 'auto' };
+            renderNozzle(currentDesign);
         }
 
-        // 치수 추가
-        addDim(xInlet - 10, yInT, xInlet - 10, yInB, d.inlet.toFixed(1), true);
-        addDim(xThroat + 10, yThT, xThroat + 10, yThB, d.throat.toFixed(1), true);
-        addDim(xExit + 15, yExT, xExit + 15, yExB, d.exit.toFixed(1), true);
-        addDim(xInlet, 350, xThroat, 350, d.convLen.toFixed(1));
-        addDim(xThroat, 350, xExit, 350, d.divLen.toFixed(1));
+        function manualCalc() {
+            const d = parseFloat(document.getElementById('innerD').value);
+            const l = parseFloat(document.getElementById('length').value);
+            if (!d || !l) return alert("내경과 길이를 입력하세요.");
 
-        // 각도 텍스트
-        const a1 = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        a1.setAttribute('x', (xInlet+xThroat)/2); a1.setAttribute('y', cy - scale*d.inlet/2 - 10);
-        a1.setAttribute('class', 'angle-text'); a1.setAttribute('text-anchor', 'middle');
-        a1.textContent = `∠ ${convAng}°`; dimGroup.appendChild(a1);
+            const thrust = d * l * 0.05;
+            const pressure = d * 0.08;
+            const time = l / 80;
 
-        const a2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        a2.setAttribute('x', (xThroat+xExit)/2); a2.setAttribute('y', cy - scale*d.exit/2 - 10);
-        a2.setAttribute('class', 'angle-text'); a2.setAttribute('text-anchor', 'middle');
-        a2.textContent = `∠ ${divAng}°`; dimGroup.appendChild(a2);
+            currentDesign = { innerD: d, length: l, throat: d * 0.4, exit: d * 0.8, thrust, pressure, time, type: 'manual' };
+            renderNozzle(currentDesign);
+        }
 
-        document.getElementById('visual').style.display = "block";
-    }
-</script>
+        function renderNozzle(data) {
+            const res = document.getElementById('results');
+            res.style.display = "block";
+            res.innerHTML = `
+                <b>계산 결과:</b><br>
+                추력: ${ (data.thrust || (data.innerD * data.length * 0.05)).toFixed(2) } N<br>
+                내경: ${ data.innerD.toFixed(2) } mm / 길이: ${ data.length.toFixed(2) } mm
+            `;
 
+            const svg = `<svg viewBox="0 0 400 200">
+                <path d="M 50,70 L 150,90 L 150,110 L 50,130 Z" fill="none" stroke="black" stroke-width="2"/>
+                <path d="M 150,90 L 350,60 L 350,140 L 150,110 Z" fill="none" stroke="black" stroke-width="2"/>
+                <line x1="30" y1="100" x2="370" y2="100" stroke="gray" stroke-dasharray="5,5" />
+            </svg>`;
+            document.getElementById('svgContainer').innerHTML = svg;
+            document.getElementById('blueprint-btn').style.display = "block";
+            
+            // 데이터 저장
+            localStorage.setItem('rocketDesign', JSON.stringify(data));
+        }
+
+        function goToBlueprint() {
+            location.href = 'blueprint.html';
+        }
+    </script>
 </body>
 </html>
