@@ -2,49 +2,56 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Rocket Lab - Nozzle Design</title>
+    <title>Rocket Lab - Nozzle Design Engine</title>
     <style>
-        body { background: #000; color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .nav-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px; margin-bottom: 20px; }
-        .home-btn { background: #ffcc00; color: #000; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 5px; }
-        .container { display: flex; gap: 20px; }
-        .panel { flex: 1; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        h2 { color: #ffcc00; }
-        input { width: 100%; padding: 10px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; box-sizing: border-box; }
-        .btn-group { display: flex; gap: 10px; margin-top: 10px; }
-        button { flex: 1; background: #ffcc00; color: #000; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; }
-        button:hover { background: #fff; }
-        #blueprint-btn { background: #28a745; color: #fff; margin-top: 20px; display: none; }
-        svg { background: #fff; border-radius: 5px; width: 100%; height: auto; margin-top: 10px; }
-        .result-box { margin-top: 15px; padding: 10px; background: #222; border-left: 4px solid #ffcc00; }
+        :root { --bg: #ffffff; --text: #000000; --point: #ffcc00; --border: #000000; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; }
+        .nav-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; }
+        .home-btn { background: #fff; color: #000; padding: 8px 15px; border: 2px solid var(--border); text-decoration: none; font-weight: bold; transition: 0.2s; }
+        .home-btn:hover { background: var(--point); transform: translateY(-2px); box-shadow: 4px 4px 0px #000; }
+        .container { display: flex; gap: 30px; }
+        .panel { flex: 1; border: 3px solid var(--border); padding: 25px; box-shadow: 8px 8px 0px #000; background: #fff; }
+        h2 { border-bottom: 3px solid var(--border); padding-bottom: 5px; margin-top: 0; font-size: 1.4rem; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border); font-size: 1rem; box-sizing: border-box; }
+        button { width: 100%; background: #fff; color: #000; border: 3px solid var(--border); padding: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; margin-top: 10px; }
+        button:hover { background: var(--point); transform: translateY(-3px); box-shadow: 5px 5px 0px #000; }
+        #blueprint-btn { background: var(--point); margin-top: 25px; display: none; }
+        #blueprint-btn:hover { background: #000; color: #fff; }
+        svg { background: #fff; border: 2px solid var(--border); width: 100%; height: auto; margin-top: 15px; }
+        .result-box { margin-top: 20px; padding: 15px; border: 2px solid var(--border); background: #f0f0f0; line-height: 1.6; }
     </style>
 </head>
 <body>
     <div class="nav-header">
-        <h1>Nozzle Design Engine</h1>
-        <a href="index.html" class="home-btn">🏠 Home</a>
+        <h1>[01] NOZZLE ENGINE</h1>
+        <a href="index.html" class="home-btn">🏠 HOME</a>
     </div>
 
     <div class="container">
         <div class="panel">
-            <h2>Design Input</h2>
-            <label>목표 추력 (N):</label>
-            <input type="number" id="targetThrust" placeholder="예: 100">
-            <button onclick="autoDesign()">자동 최적화 설계</button>
-            <hr style="border: 0.5px solid #333; margin: 20px 0;">
-            <label>수동 내경 (mm):</label>
-            <input type="number" id="innerD" placeholder="내경">
-            <label>수동 길이 (mm):</label>
-            <input type="number" id="length" placeholder="길이">
-            <button onclick="manualCalc()">수동 계산 및 도면 생성</button>
+            <h2>DESIGN PARAMETERS</h2>
+            <label>TARGET THRUST (N):</label>
+            <input type="number" id="targetThrust" placeholder="EX: 200">
+            <button onclick="autoDesign()">AUTO OPTIMIZATION</button>
+            <div style="height: 30px; border-left: 2px dashed #000; margin: 10px auto; width: 0;"></div>
+            <label>INNER DIAMETER (mm):</label>
+            <input type="number" id="innerD" placeholder="D_INNER">
+            <label>LENGTH (mm):</label>
+            <input type="number" id="length" placeholder="LENGTH">
+            <button onclick="manualCalc()">MANUAL CALCULATION</button>
             
             <div id="results" class="result-box" style="display:none;"></div>
-            <button id="blueprint-btn" onclick="goToBlueprint()">🎨 정밀 블루프린트 보기</button>
+            <button id="blueprint-btn" onclick="goToBlueprint()">🎨 GENERATE BLUEPRINT</button>
         </div>
 
         <div class="panel">
-            <h2>Schematic Preview</h2>
-            <div id="svgContainer"></div>
+            <h2>PREVIEW RENDERING</h2>
+            <div id="svgContainer">
+                <svg viewBox="0 0 400 200">
+                    <rect width="100%" height="100%" fill="#eee"/>
+                    <text x="120" y="105" font-family="Courier" font-size="14">NO DATA RENDERED</text>
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -53,7 +60,7 @@
 
         function autoDesign() {
             const T = parseFloat(document.getElementById('targetThrust').value);
-            if (!T) return alert("목표 추력을 입력하세요.");
+            if (!T) return alert("TARGET THRUST REQUIRED.");
             
             const recInner = Math.sqrt(T / 0.1);
             const throat = recInner * 0.35;
@@ -70,7 +77,7 @@
         function manualCalc() {
             const d = parseFloat(document.getElementById('innerD').value);
             const l = parseFloat(document.getElementById('length').value);
-            if (!d || !l) return alert("내경과 길이를 입력하세요.");
+            if (!d || !l) return alert("INNER_D AND LENGTH REQUIRED.");
 
             const thrust = d * l * 0.05;
             const pressure = d * 0.08;
@@ -84,26 +91,24 @@
             const res = document.getElementById('results');
             res.style.display = "block";
             res.innerHTML = `
-                <b>계산 결과:</b><br>
-                추력: ${ (data.thrust || (data.innerD * data.length * 0.05)).toFixed(2) } N<br>
-                내경: ${ data.innerD.toFixed(2) } mm / 길이: ${ data.length.toFixed(2) } mm
+                <b>[ENGINE RESULTS]</b><br>
+                THRUST: ${ (data.thrust || (data.innerD * data.length * 0.05)).toFixed(2) } N<br>
+                INNER_D: ${ data.innerD.toFixed(2) } mm<br>
+                LENGTH: ${ data.length.toFixed(2) } mm
             `;
 
-            const svg = `<svg viewBox="0 0 400 200">
-                <path d="M 50,70 L 150,90 L 150,110 L 50,130 Z" fill="none" stroke="black" stroke-width="2"/>
-                <path d="M 150,90 L 350,60 L 350,140 L 150,110 Z" fill="none" stroke="black" stroke-width="2"/>
-                <line x1="30" y1="100" x2="370" y2="100" stroke="gray" stroke-dasharray="5,5" />
+            const svg = `<svg viewBox="0 0 400 200" style="background:white;">
+                <path d="M 50,70 L 150,90 L 150,110 L 50,130 Z" fill="none" stroke="black" stroke-width="2.5"/>
+                <path d="M 150,90 L 350,60 L 350,140 L 150,110 Z" fill="none" stroke="black" stroke-width="2.5"/>
+                <line x1="30" y1="100" x2="370" y2="100" stroke="black" stroke-dasharray="8,4" stroke-width="1" />
             </svg>`;
             document.getElementById('svgContainer').innerHTML = svg;
             document.getElementById('blueprint-btn').style.display = "block";
             
-            // 데이터 저장
             localStorage.setItem('rocketDesign', JSON.stringify(data));
         }
 
-        function goToBlueprint() {
-            location.href = 'blueprint.html';
-        }
+        function goToBlueprint() { location.href = 'blueprint.html'; }
     </script>
 </body>
 </html>
