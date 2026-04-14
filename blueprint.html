@@ -100,31 +100,36 @@
             const D = data.innerD;
             const L = data.bodyLen;
 
-            // 1. NOSECONE (With Screw Holes)
+            // 1. NOSECONE (Conical Shape + Screw Holes)
             const ns = `<svg viewBox="0 0 600 200">
-                <path d="M 150,150 Q 300,20 450,150 Z" fill="none" stroke="black" stroke-width="2.5"/>
+                <!-- Conical Shape (Triangle) -->
+                <path d="M 150,150 L 300,20 L 450,150 Z" fill="none" stroke="black" stroke-width="2.5"/>
                 <line x1="150" y1="150" x2="450" y2="150" stroke="black" stroke-width="1.5"/>
-                <!-- Screw Holes -->
+                <!-- Mounting Screw Holes -->
                 <circle cx="170" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
                 <circle cx="430" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
-                <text x="250" y="145" font-size="12">FASTENER HOLES (M3)</text>
+                <circle cx="300" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
+                <text x="230" y="170" font-size="12" font-weight="bold">CONICAL NOSECONE (M3 FASTENERS)</text>
             </svg>`;
             document.getElementById('nose-svg').innerHTML = ns;
 
-            // 2. BODY (With O-Ring Grooves)
+            // 2. BODY (With O-Ring Grooves & Screw Holes)
             const bs = `<svg viewBox="0 0 600 150">
                 <rect x="50" y="40" width="500" height="70" fill="none" stroke="black" stroke-width="2.5"/>
-                <!-- O-Ring Grooves (Real Geometry) -->
+                <!-- O-Ring Grooves -->
                 <rect x="70" y="40" width="10" height="5" fill="black"/>
                 <rect x="70" y="105" width="10" height="5" fill="black"/>
                 <rect x="520" y="40" width="10" height="5" fill="black"/>
                 <rect x="520" y="105" width="10" height="5" fill="black"/>
+                <!-- Mounting Screw Holes (New) -->
+                <circle cx="60" cy="75" r="3" fill="none" stroke="black" stroke-width="1.5"/>
+                <circle cx="540" cy="75" r="3" fill="none" stroke="black" stroke-width="1.5"/>
                 <text x="250" y="30" font-size="12">BODY L: ${L}mm</text>
-                <text x="210" y="135" font-size="11" fill="gray">O-RING GROOVE (SEALING ZONE)</text>
+                <text x="210" y="135" font-size="11" fill="gray">O-RING GROOVE + SCREW MOUNT POINTS</text>
             </svg>`;
             document.getElementById('body-svg').innerHTML = bs;
 
-            // 3. NOZZLE (Detailed Cross-Section)
+            // 3. NOZZLE (Detailed Cross-Section + Screw Holes)
             const nos = `<svg viewBox="0 0 600 250">
                 <!-- Outer Shell -->
                 <path d="M 50,80 L 200,100 L 200,150 L 50,170 Z" fill="none" stroke="black" stroke-width="3"/>
@@ -132,10 +137,13 @@
                 <!-- O-Ring Channel -->
                 <rect x="60" y="81" width="15" height="4" fill="black"/>
                 <rect x="60" y="165" width="15" height="4" fill="black"/>
+                <!-- Screw Holes for Assembly (New) -->
+                <circle cx="55" cy="125" r="4" fill="none" stroke="black" stroke-width="2"/>
+                <text x="65" y="129" font-size="10">MOUNT HOLE</text>
                 <!-- Inner Wall -->
                 <path d="M 50,90 L 190,110 L 190,140 L 50,160" fill="none" stroke="black" stroke-width="1" stroke-dasharray="4"/>
                 <text x="70" y="70" font-size="12">O-RING SLOT</text>
-                <text x="300" y="230" font-size="14" font-weight="bold">SECTION A-A (1:1 SCALE)</text>
+                <text x="300" y="230" font-size="14" font-weight="bold">SECTION A-A (SCREW HOLES ADDED)</text>
             </svg>`;
             document.getElementById('nozzle-svg').innerHTML = nos;
         }

@@ -97,10 +97,20 @@
                 LENGTH: ${ data.length.toFixed(2) } mm
             `;
 
+            // Calculate Angles for Display
+            const convAngle = (Math.atan2(20, 100) * 180 / Math.PI).toFixed(1);
+            const divAngle = (Math.atan2(30, 200) * 180 / Math.PI).toFixed(1);
+
             const svg = `<svg viewBox="0 0 400 200" style="background:white;">
                 <path d="M 50,70 L 150,90 L 150,110 L 50,130 Z" fill="none" stroke="black" stroke-width="2.5"/>
                 <path d="M 150,90 L 350,60 L 350,140 L 150,110 Z" fill="none" stroke="black" stroke-width="2.5"/>
                 <line x1="30" y1="100" x2="370" y2="100" stroke="black" stroke-dasharray="8,4" stroke-width="1" />
+                
+                <!-- Angle Labels -->
+                <text x="80" y="85" font-family="Courier" font-size="10" fill="blue">∠${convAngle}°</text>
+                <text x="230" y="85" font-family="Courier" font-size="10" fill="red">∠${divAngle}°</text>
+                
+                <text x="10" y="20" font-family="Courier" font-size="12" font-weight="bold">NOZZLE SCHEMATIC (ANGLES DISPLAYED)</text>
             </svg>`;
             document.getElementById('svgContainer').innerHTML = svg;
             document.getElementById('blueprint-btn').style.display = "block";
