@@ -26,6 +26,10 @@ app.get('/blueprint.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'blueprint.html'));
 });
 
+app.get('/dataspace.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dataspace.html'));
+});
+
 // Basic Health Check / DB Test
 app.get('/status', async (req, res) => {
   try {
