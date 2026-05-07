@@ -10,20 +10,21 @@
         .home-btn { background: #fff; color: #000; padding: 8px 15px; border: 2px solid var(--border); text-decoration: none; font-weight: bold; transition: 0.2s; }
         .home-btn:hover { background: var(--point); transform: translateY(-2px); box-shadow: 4px 4px 0px #000; }
         .container { display: flex; gap: 30px; }
-        .panel { flex: 1; border: 3px solid var(--border); padding: 25px; box-shadow: 8px 8px 0px #000; background: #fff; }
-        h2 { border-bottom: 3px solid var(--border); padding-bottom: 5px; margin-top: 0; font-size: 1.4rem; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border); font-size: 1rem; box-sizing: border-box; }
+        .panel { flex: 1; border: 3px solid var(--border); padding: 25px; box-shadow: 8px 8px 0px #000; background: #fff; max-height: 85vh; overflow-y: auto; }
+        h2 { border-bottom: 3px solid var(--border); padding-bottom: 5px; margin-top: 0; font-size: 1.4rem; background: var(--point); display: inline-block; padding-right: 20px; }
+        label { font-weight: bold; font-size: 0.8rem; color: #444; }
+        input { width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 2px solid var(--border); font-size: 1rem; box-sizing: border-box; }
         button { width: 100%; background: #fff; color: #000; border: 3px solid var(--border); padding: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; margin-top: 10px; }
         button:hover { background: var(--point); transform: translateY(-3px); box-shadow: 5px 5px 0px #000; }
         #blueprint-btn { background: var(--point); margin-top: 25px; display: none; }
         #blueprint-btn:hover { background: #000; color: #fff; }
         svg { background: #fff; border: 2px solid var(--border); width: 100%; height: auto; margin-top: 15px; }
-        .result-box { margin-top: 20px; padding: 15px; border: 2px solid var(--border); background: #f0f0f0; line-height: 1.6; }
+        .result-box { margin-top: 20px; padding: 15px; border: 2px solid var(--border); background: #f9f9f9; line-height: 1.6; font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <div class="nav-header">
-        <h1>[01] NOZZLE ENGINE</h1>
+        <h1>[01] NOZZLE ENGINE V2</h1>
         <a href="index.html" class="home-btn">🏠 HOME</a>
     </div>
 
@@ -31,26 +32,42 @@
         <div class="panel">
             <h2>DESIGN PARAMETERS</h2>
             <label>TARGET THRUST (N):</label>
-            <input type="number" id="targetThrust" placeholder="EX: 200">
-            <button onclick="autoDesign()">AUTO OPTIMIZATION</button>
-            <div style="height: 30px; border-left: 2px dashed #000; margin: 10px auto; width: 0;"></div>
-            <label>INNER DIAMETER (mm):</label>
-            <input type="number" id="innerD" placeholder="D_INNER">
-            <label>LENGTH (mm):</label>
-            <input type="number" id="length" placeholder="LENGTH">
-            <button onclick="manualCalc()">MANUAL CALCULATION</button>
+            <input type="number" id="targetThrust" value="250">
+            <button onclick="autoDesign()">AUTO OPTIMIZATION (PRO)</button>
+            <div style="height: 20px; border-left: 2px dashed #000; margin: 10px auto; width: 0;"></div>
+            
+            <label>INNER DIAMETER (D_in, mm):</label>
+            <input type="number" id="innerD">
+            <label>THROAT DIAMETER (D_t, mm):</label>
+            <input type="number" id="throatD">
+            <label>EXIT DIAMETER (D_e, mm):</label>
+            <input type="number" id="exitD">
+            <label>CONVERGENCE ANGLE (deg):</label>
+            <input type="number" id="convAngle" value="45">
+            <label>DIVERGENCE ANGLE (deg):</label>
+            <input type="number" id="divAngle" value="15">
+            <label>SHOULDER LENGTH (mm):</label>
+            <input type="number" id="shoulderL" value="40">
+            
+            <button onclick="manualCalc()">CALCULATE & RENDER</button>
             
             <div id="results" class="result-box" style="display:none;"></div>
-            <button id="blueprint-btn" onclick="goToBlueprint()">🎨 GENERATE BLUEPRINT</button>
+            <button id="blueprint-btn" onclick="goToBlueprint()">🎨 GENERATE PRECISION BLUEPRINT</button>
         </div>
 
         <div class="panel">
-            <h2>PREVIEW RENDERING</h2>
+            <h2>PHYSICS PREVIEW (DE LAVAL)</h2>
             <div id="svgContainer">
-                <svg viewBox="0 0 400 200">
+                <svg viewBox="0 0 400 300">
                     <rect width="100%" height="100%" fill="#eee"/>
-                    <text x="120" y="105" font-family="Courier" font-size="14">NO DATA RENDERED</text>
+                    <text x="120" y="150" font-family="Courier" font-size="14">WAITING FOR PARAMETERS...</text>
                 </svg>
+            </div>
+            <div class="result-box" style="background:#fff; border-style:dashed;">
+                <b>ENGINEERING NOTES:</b><br>
+                - Convergence: 30-45° for subsonic acceleration.<br>
+                - Divergence: 12-15° for supersonic expansion.<br>
+                - Shoulder: Must be >1.5x D_in for stability.
             </div>
         </div>
     </div>
@@ -62,60 +79,81 @@
             const T = parseFloat(document.getElementById('targetThrust').value);
             if (!T) return alert("TARGET THRUST REQUIRED.");
             
-            const recInner = Math.sqrt(T / 0.1);
-            const throat = recInner * 0.35;
-            const exit = recInner * 0.75;
-            const length = recInner * 1.2;
+            const dIn = Math.sqrt(T / 0.08);
+            const dT = dIn * 0.38;
+            const dE = dIn * 0.85;
+            const shoulder = dIn * 1.5;
 
-            document.getElementById('innerD').value = recInner.toFixed(2);
-            document.getElementById('length').value = length.toFixed(2);
+            document.getElementById('innerD').value = dIn.toFixed(2);
+            document.getElementById('throatD').value = dT.toFixed(2);
+            document.getElementById('exitD').value = dE.toFixed(2);
+            document.getElementById('shoulderL').value = shoulder.toFixed(1);
             
-            currentDesign = { innerD: recInner, length, throat, exit, type: 'auto' };
-            renderNozzle(currentDesign);
+            manualCalc();
         }
 
         function manualCalc() {
-            const d = parseFloat(document.getElementById('innerD').value);
-            const l = parseFloat(document.getElementById('length').value);
-            if (!d || !l) return alert("INNER_D AND LENGTH REQUIRED.");
+            const dIn = parseFloat(document.getElementById('innerD').value);
+            const dT = parseFloat(document.getElementById('throatD').value);
+            const dE = parseFloat(document.getElementById('exitD').value);
+            const alpha = parseFloat(document.getElementById('convAngle').value);
+            const beta = parseFloat(document.getElementById('divAngle').value);
+            const sL = parseFloat(document.getElementById('shoulderL').value);
 
-            const thrust = d * l * 0.05;
-            const pressure = d * 0.08;
-            const time = l / 80;
+            if (!dIn || !dT || !dE) return alert("BASIC DIMENSIONS REQUIRED.");
 
-            currentDesign = { innerD: d, length: l, throat: d * 0.4, exit: d * 0.8, thrust, pressure, time, type: 'manual' };
+            // Calculate lengths based on angles
+            const convL = ((dIn - dT) / 2) / Math.tan((alpha / 2) * Math.PI / 180);
+            const divL = ((dE - dT) / 2) / Math.tan((beta / 2) * Math.PI / 180);
+            const totalL = sL + convL + divL;
+
+            currentDesign = { dIn, dT, dE, alpha, beta, sL, convL, divL, totalL };
             renderNozzle(currentDesign);
         }
 
-        function renderNozzle(data) {
+        function renderNozzle(d) {
             const res = document.getElementById('results');
             res.style.display = "block";
             res.innerHTML = `
-                <b>[ENGINE RESULTS]</b><br>
-                THRUST: ${ (data.thrust || (data.innerD * data.length * 0.05)).toFixed(2) } N<br>
-                INNER_D: ${ data.innerD.toFixed(2) } mm<br>
-                LENGTH: ${ data.length.toFixed(2) } mm
+                <b>[PRECISION ANALYSIS]</b><br>
+                TOTAL LENGTH: ${d.totalL.toFixed(2)} mm<br>
+                CONV. LENGTH: ${d.convL.toFixed(2)} mm<br>
+                DIV. LENGTH: ${d.divL.toFixed(2)} mm<br>
+                EST. EXPANSION RATIO: ${( (d.dE*d.dE)/(d.dT*d.dT) ).toFixed(2)}
             `;
 
-            // Calculate Angles for Display
-            const convAngle = (Math.atan2(20, 100) * 180 / Math.PI).toFixed(1);
-            const divAngle = (Math.atan2(30, 200) * 180 / Math.PI).toFixed(1);
+            const scale = 300 / d.totalL;
+            const hScale = 150 / d.dIn;
+            
+            const x0 = 20, yMid = 150;
+            const x1 = x0 + d.sL * scale;
+            const x2 = x1 + d.convL * scale;
+            const x3 = x2 + d.divL * scale;
 
-            const svg = `<svg viewBox="0 0 400 200" style="background:white;">
-                <path d="M 50,70 L 150,90 L 150,110 L 50,130 Z" fill="none" stroke="black" stroke-width="2.5"/>
-                <path d="M 150,90 L 350,60 L 350,140 L 150,110 Z" fill="none" stroke="black" stroke-width="2.5"/>
-                <line x1="30" y1="100" x2="370" y2="100" stroke="black" stroke-dasharray="8,4" stroke-width="1" />
+            const yIn = (d.dIn/2) * hScale;
+            const yT = (d.dT/2) * hScale;
+            const yE = (d.dE/2) * hScale;
+
+            const svg = `<svg viewBox="0 0 400 300" style="background:white;">
+                <!-- Shoulder (Insertion Part) -->
+                <rect x="${x0}" y="${yMid - yIn}" width="${d.sL * scale}" height="${yIn * 2}" fill="none" stroke="black" stroke-width="2.5" stroke-dasharray="5,3"/>
                 
-                <!-- Angle Labels -->
-                <text x="80" y="85" font-family="Courier" font-size="10" fill="blue">∠${convAngle}°</text>
-                <text x="230" y="85" font-family="Courier" font-size="10" fill="red">∠${divAngle}°</text>
+                <!-- Main Nozzle Body -->
+                <path d="M ${x1},${yMid - yIn} L ${x2},${yMid - yT} L ${x3},${yMid - yE} L ${x3},${yMid + yE} L ${x2},${yMid + yT} L ${x1},${yMid + yIn} Z" 
+                      fill="none" stroke="black" stroke-width="3"/>
                 
-                <text x="10" y="20" font-family="Courier" font-size="12" font-weight="bold">NOZZLE SCHEMATIC (ANGLES DISPLAYED)</text>
+                <!-- Center Line -->
+                <line x1="10" y1="${yMid}" x2="390" y2="${yMid}" stroke="black" stroke-dasharray="8,4" stroke-width="1" />
+                
+                <!-- Dimension Labels -->
+                <text x="${x0}" y="${yMid - yIn - 10}" font-size="10">SHOULDER (${d.sL}mm)</text>
+                <text x="${x2}" y="${yMid - yT - 10}" font-size="10">THROAT</text>
+                <text x="${x3-40}" y="${yMid + yE + 20}" font-size="10">EXIT (${d.dE}mm)</text>
             </svg>`;
+
             document.getElementById('svgContainer').innerHTML = svg;
             document.getElementById('blueprint-btn').style.display = "block";
-            
-            localStorage.setItem('rocketDesign', JSON.stringify(data));
+            localStorage.setItem('rocketDesign', JSON.stringify(d));
         }
 
         function goToBlueprint() { location.href = 'blueprint.html'; }

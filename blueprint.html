@@ -18,24 +18,36 @@
         .btn-3d { width: 100%; background: #000; color: #fff; border: none; padding: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1.2rem; margin-top: 20px; text-transform: uppercase; }
         .btn-3d:hover { background: var(--point); color: #000; box-shadow: 0px 10px 0px #000; transform: translateY(-5px); }
         .dim-line { stroke: #000; stroke-width: 1; marker-start: url(#arrow); marker-end: url(#arrow); }
+        .warning-box { background: #ffebeb; border: 2px solid #ff0000; padding: 15px; margin-top: 20px; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
     <div class="nav-header">
-        <h1>[02] PRECISION BLUEPRINT</h1>
+        <h1>[02] PRECISION BLUEPRINT V2 (ASSEMBLY READY)</h1>
         <a href="index.html" class="home-btn">🏠 HOME</a>
     </div>
 
     <div class="container">
         <div id="content" style="display:none;">
-            <!-- NOZECON -->
+            <!-- ASSEMBLY VIEW (The "Fit") -->
+            <div class="section">
+                <h2>SECTION 00: FULL ASSEMBLY & FIT</h2>
+                <div id="assembly-svg"></div>
+                <div class="info-panel">
+                    <div class="spec-item"><b>FIT TOLERANCE</b>H7/g6 (Slide Fit)</div>
+                    <div class="spec-item"><b>RETENTION</b>M4 Radial Bolts x 4</div>
+                    <div class="spec-item"><b>SAFETY FACTOR</b>2.5x Burst Pressure</div>
+                </div>
+            </div>
+
+            <!-- NOSECONE -->
             <div class="section">
                 <h2>SECTION 01: NOSECONE</h2>
                 <div id="nose-svg"></div>
                 <div class="info-panel">
-                    <div class="spec-item"><b>GEOMETRY</b>Von Karman / 3:1 Ratio</div>
+                    <div class="spec-item"><b>GEOMETRY</b>Conical (Aerodynamic)</div>
                     <div class="spec-item"><b>FASTENERS</b>M3 Hex Screw x 4</div>
-                    <div class="spec-item"><b>HOLE POS</b>5mm From Base Rim</div>
+                    <div class="spec-item"><b>COUPLING</b>Shoulder Depth: 30mm</div>
                 </div>
             </div>
 
@@ -44,24 +56,28 @@
                 <h2>SECTION 02: AIRFRAME BODY</h2>
                 <div id="body-svg"></div>
                 <div class="info-panel">
-                    <div class="spec-item"><b>MATERIAL</b>AL6061-T6 (Seamless)</div>
-                    <div class="spec-item"><b>DIMENSION</b>ID: <span id="span-id"></span>mm / L: <span id="span-l"></span>mm</div>
-                    <div class="spec-item"><b>O-RING GROOVE</b>AS568-230 Compatible</div>
+                    <div class="spec-item"><b>MATERIAL</b>AL6061-T6 (T6 Temper)</div>
+                    <div class="spec-item"><b>WALL THICKNESS</b>2.5mm (Safety Min)</div>
+                    <div class="spec-item"><b>FINISH</b>Anodized Black</div>
                 </div>
             </div>
 
             <!-- NOZZLE -->
             <div class="section">
-                <h2>SECTION 03: THRUST NOZZLE</h2>
+                <h2>SECTION 03: PRECISION NOZZLE</h2>
                 <div id="nozzle-svg"></div>
                 <div class="info-panel">
-                    <div class="spec-item"><b>ASSEMBLY</b>Threaded + O-Ring Seal</div>
-                    <div class="spec-item"><b>O-RING</b>AS568-222 (Double)</div>
-                    <div class="spec-item"><b>PRECISION</b>Hole Tolerance: +0.05mm</div>
+                    <div class="spec-item"><b>O-RING GROOVE</b>2.0mm Depth / 3.5mm Width</div>
+                    <div class="spec-item"><b>MATERIAL</b>Graphite or 304 Stainless</div>
+                    <div class="spec-item"><b>ANGLES</b><span id="span-angles"></span></div>
                 </div>
             </div>
 
-            <button class="btn-3d" onclick="generate3D()">🚀 GENERATE 3D MODEL (STL/SCAD)</button>
+            <div class="warning-box">
+                ⚠️ SAFETY NOTICE: Ensure all radial bolts are torqued to 2.5Nm. Pressure test assembly in a blast-shielded environment before ignition.
+            </div>
+
+            <button class="btn-3d" onclick="generate3D()">🚀 EXPORT TECHNICAL DATA (STL/JSON)</button>
         </div>
 
         <div id="no-data" class="section" style="text-align:center;">
@@ -82,68 +98,64 @@
         window.onload = function() {
             const raw = localStorage.getItem('rocketDesign');
             if(raw) {
-                const data = JSON.parse(raw);
+                const d = JSON.parse(raw);
                 document.getElementById('no-data').style.display = 'none';
                 document.getElementById('content').style.display = 'block';
                 
                 let bLen = prompt("ENTER BODY TUBE LENGTH (mm):", "600");
-                data.bodyLen = parseFloat(bLen) || 600;
+                d.bodyLen = parseFloat(bLen) || 600;
                 
-                document.getElementById('span-id').innerText = data.innerD.toFixed(1);
-                document.getElementById('span-l').innerText = data.bodyLen;
+                document.getElementById('span-angles').innerText = `Conv: ${d.alpha}° / Div: ${d.beta}°`;
                 
-                renderDrawings(data);
+                renderDrawings(d);
             }
         };
 
-        function renderDrawings(data) {
-            const D = data.innerD;
-            const L = data.bodyLen;
+        function renderDrawings(d) {
+            // ASSEMBLY VIEW
+            const as = `<svg viewBox="0 0 800 200">
+                <!-- Body Tube -->
+                <rect x="50" y="50" width="600" height="100" fill="none" stroke="black" stroke-width="2"/>
+                <!-- Nozzle Inserted -->
+                <g transform="translate(610, 50)">
+                    <rect x="-${d.sL}" y="5" width="${d.sL}" height="90" fill="#f0f0f0" stroke="black" stroke-dasharray="4"/>
+                    <path d="M 0,0 L 40,20 L 70,-10 L 70,110 L 40,80 L 0,100 Z" fill="white" stroke="black" stroke-width="2"/>
+                    <!-- Fasteners -->
+                    <rect x="-${d.sL/2}" y="-5" width="4" height="15" fill="black"/>
+                    <rect x="-${d.sL/2}" y="90" width="4" height="15" fill="black"/>
+                    <text x="-${d.sL}" y="-10" font-size="10">RETENTION BOLTS</text>
+                </g>
+                <text x="300" y="180" font-size="14" font-weight="bold">ASSEMBLY VIEW: INTERLOCKING INTERFACE</text>
+            </svg>`;
+            document.getElementById('assembly-svg').innerHTML = as;
 
-            // 1. NOSECONE (Conical Shape + Screw Holes)
+            // NOSECONE
             const ns = `<svg viewBox="0 0 600 200">
-                <!-- Conical Shape (Triangle) -->
-                <path d="M 150,150 L 300,20 L 450,150 Z" fill="none" stroke="black" stroke-width="2.5"/>
-                <line x1="150" y1="150" x2="450" y2="150" stroke="black" stroke-width="1.5"/>
-                <!-- Mounting Screw Holes -->
-                <circle cx="170" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
-                <circle cx="430" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
-                <circle cx="300" cy="140" r="3" fill="none" stroke="black" stroke-width="2"/>
-                <text x="230" y="170" font-size="12" font-weight="bold">CONICAL NOSECONE (M3 FASTENERS)</text>
+                <path d="M 150,150 L 300,30 L 450,150 Z" fill="none" stroke="black" stroke-width="2.5"/>
+                <rect x="150" y="150" width="300" height="30" fill="none" stroke="black" stroke-width="1.5" stroke-dasharray="3"/>
+                <circle cx="170" cy="165" r="3" fill="black"/>
+                <circle cx="430" cy="165" r="3" fill="black"/>
+                <text x="230" y="195" font-size="10">COUPLING SHOULDER (M3 BOLT POINTS)</text>
             </svg>`;
             document.getElementById('nose-svg').innerHTML = ns;
 
-            // 2. BODY (With O-Ring Grooves & Screw Holes)
+            // BODY
             const bs = `<svg viewBox="0 0 600 150">
-                <rect x="50" y="40" width="500" height="70" fill="none" stroke="black" stroke-width="2.5"/>
-                <!-- O-Ring Grooves -->
-                <rect x="70" y="40" width="10" height="5" fill="black"/>
-                <rect x="70" y="105" width="10" height="5" fill="black"/>
-                <rect x="520" y="40" width="10" height="5" fill="black"/>
-                <rect x="520" y="105" width="10" height="5" fill="black"/>
-                <!-- Mounting Screw Holes (New) -->
-                <circle cx="60" cy="75" r="3" fill="none" stroke="black" stroke-width="1.5"/>
-                <circle cx="540" cy="75" r="3" fill="none" stroke="black" stroke-width="1.5"/>
-                <text x="250" y="30" font-size="12">BODY L: ${L}mm</text>
-                <text x="210" y="135" font-size="11" fill="gray">O-RING GROOVE + SCREW MOUNT POINTS</text>
+                <rect x="50" y="40" width="500" height="70" fill="none" stroke="black" stroke-width="3"/>
+                <line x1="50" y1="35" x2="550" y2="35" stroke="black" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+                <text x="250" y="30" font-size="12">L: ${d.bodyLen}mm</text>
+                <text x="50" y="130" font-size="11">WALL: 2.5mm | ID: ${d.dIn.toFixed(1)}mm</text>
             </svg>`;
             document.getElementById('body-svg').innerHTML = bs;
 
-            // 3. NOZZLE (Detailed Cross-Section + Screw Holes)
+            // NOZZLE
             const nos = `<svg viewBox="0 0 600 250">
-                <!-- Outer Shell -->
-                <path d="M 50,80 L 200,100 L 200,150 L 50,170 Z" fill="none" stroke="black" stroke-width="3"/>
-                <path d="M 200,100 L 550,50 L 550,200 L 200,150 Z" fill="none" stroke="black" stroke-width="3"/>
-                <!-- O-Ring Channel -->
-                <rect x="60" y="81" width="15" height="4" fill="black"/>
-                <rect x="60" y="165" width="15" height="4" fill="black"/>
-                <!-- Screw Holes for Assembly (New) -->
-                <circle cx="55" cy="125" r="4" fill="none" stroke="black" stroke-width="2"/>
-                <text x="65" y="129" font-size="10">MOUNT HOLE</text>
-                <!-- Inner Wall -->
-                <path d="M 50,90 L 190,110 L 190,140 L 50,160" fill="none" stroke="black" stroke-width="1" stroke-dasharray="4"/>
-                <text x="70" y="70" font-size="12">O-RING SLOT</text>
-                <text x="300" y="230" font-size="14" font-weight="bold">SECTION A-A (SCREW HOLES ADDED)</text>
+                <path d="M 50,50 L 50,200 L 150,200 L 250,230 L 450,250 L 450,0 L 250,20 L 150,50 Z" fill="none" stroke="black" stroke-width="3"/>
+                <!-- O-Ring Grooves -->
+                <rect x="70" y="50" width="10" height="5" fill="black"/>
+                <rect x="70" y="195" width="10" height="5" fill="black"/>
+                <text x="60" y="40" font-size="10">O-RING SEAL ZONE</text>
+                <text x="300" y="230" font-size="12">DE LAVAL RATIO: ${(d.dE/d.dT).toFixed(2)}</text>
             </svg>`;
             document.getElementById('nozzle-svg').innerHTML = nos;
         }
