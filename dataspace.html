@@ -31,6 +31,8 @@
         .video-upload-form { display: none; margin-top: 20px; padding: 20px; border: 2px dashed var(--border); }
         .video-list { margin-top: 20px; }
         .video-item { border: 2px solid #000; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: #ff4d4d; color: #fff; border: 2px solid #000; padding: 5px 10px; cursor: pointer; font-size: 0.7rem; font-weight: bold; display: none; margin-left: 10px; }
+        .delete-btn:hover { background: #000; }
     </style>
 </head>
 <body>
@@ -98,7 +100,7 @@
     <div id="videos" class="content-section">
         <div id="login-section">
             <div class="login-box">
-                <h3 style="margin-top:0;">ADMIN LOGIN (VIDEO UPLOAD)</h3>
+                <h3 style="margin-top:0;">ADMIN LOGIN (VIDEO MANAGEMENT)</h3>
                 <label>ID:</label>
                 <input type="text" id="adminId" placeholder="ID">
                 <label>PW:</label>
@@ -109,32 +111,38 @@
 
         <div id="video-workspace" style="display:none;">
             <div style="background: var(--point); padding: 10px; border: 2px solid #000; margin-bottom: 20px;">
-                <b>LOGIN SUCCESS:</b> Welcome, raphaelwj. You can now upload reference videos.
+                <b>LOGIN SUCCESS:</b> Welcome, raphaelwj. [Admin Mode Enabled]
             </div>
             
             <div class="video-upload-form">
                 <h3>UPLOAD REFERENCE VIDEO</h3>
                 <input type="text" id="videoTitle" placeholder="VIDEO TITLE">
-                <input type="text" id="videoUrl" placeholder="YOUTUBE URL (EX: https://www.youtube.com/watch?v=...)">
+                <input type="text" id="videoUrl" placeholder="YOUTUBE URL">
                 <button class="submit-btn" onclick="addVideo()">PUBLISH VIDEO</button>
             </div>
-            <button class="tab-btn" style="width:auto; padding: 10px 20px;" onclick="document.querySelector('.video-upload-form').style.display='block'">+ ADD NEW VIDEO</button>
+            <div style="display:flex; gap:10px;">
+                <button class="tab-btn" style="width:auto; padding: 10px 20px;" onclick="document.querySelector('.video-upload-form').style.display='block'">+ ADD NEW VIDEO</button>
+                <button class="tab-btn" style="width:auto; padding: 10px 20px; background:#eee;" onclick="logout()">LOGOUT</button>
+            </div>
         </div>
 
         <div class="video-list" id="videoList">
             <h3>CURATED REFERENCE VIDEOS</h3>
-            <div class="video-item">
-                <span>[기초] 로켓 노즐 설계 원리 - De Laval Nozzle</span>
-                <a href="https://www.youtube.com/watch?v=bu77R4GdhxA" target="_blank" class="home-btn" style="font-size:0.7rem;">WATCH</a>
-            </div>
-            <div class="video-item">
-                <span>[안전] 추진체 제작 및 안전 수칙 가이드</span>
-                <a href="https://www.youtube.com/watch?v=smQ2u6UFaBg" target="_blank" class="home-btn" style="font-size:0.7rem;">WATCH</a>
-            </div>
+            <!-- Videos will be injected here -->
         </div>
     </div>
 
     <script>
+        let isAdmin = false;
+        let defaultVideos = [
+            { title: "[기초] 로켓 노즐 설계 원리 - De Laval Nozzle", url: "https://www.youtube.com/watch?v=bu77R4GdhxA" },
+            { title: "[안전] 추진체 제작 및 안전 수칙 가이드", url: "https://www.youtube.com/watch?v=smQ2u6UFaBg" }
+        ];
+
+        window.onload = function() {
+            loadVideos();
+        }
+
         function showTab(tabId) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -147,11 +155,50 @@
             const pw = document.getElementById('adminPw').value;
             
             if(id === 'raphaelwj' && pw === 'wjddbsdn01') {
+                isAdmin = true;
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('video-workspace').style.display = 'block';
+                renderVideos(); // Re-render to show delete buttons
             } else {
                 alert('INVALID CREDENTIALS.');
             }
+        }
+
+        function logout() {
+            isAdmin = false;
+            document.getElementById('login-section').style.display = 'block';
+            document.getElementById('video-workspace').style.display = 'none';
+            renderVideos();
+        }
+
+        function loadVideos() {
+            const stored = localStorage.getItem('rocketVideos');
+            if(!stored) {
+                localStorage.setItem('rocketVideos', JSON.stringify(defaultVideos));
+            }
+            renderVideos();
+        }
+
+        function renderVideos() {
+            const list = document.getElementById('videoList');
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            
+            list.innerHTML = '<h3>CURATED REFERENCE VIDEOS</h3>';
+            
+            videos.forEach((v, index) => {
+                const item = document.createElement('div');
+                item.className = 'video-item';
+                item.innerHTML = `
+                    <div>
+                        <span>${v.title}</span>
+                    </div>
+                    <div>
+                        <a href="${v.url}" target="_blank" class="home-btn" style="font-size:0.7rem; display:inline-block;">WATCH</a>
+                        <button class="delete-btn" onclick="deleteVideo(${index})" style="display:${isAdmin ? 'inline-block' : 'none'}">X</button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
         }
 
         function addVideo() {
@@ -159,15 +206,22 @@
             const url = document.getElementById('videoUrl').value;
             if(!title || !url) return alert('TITLE AND URL REQUIRED.');
 
-            const list = document.getElementById('videoList');
-            const item = document.createElement('div');
-            item.className = 'video-item';
-            item.innerHTML = `<span>[UPLOADED] ${title}</span> <a href="${url}" target="_blank" class="home-btn" style="font-size:0.7rem;">WATCH</a>`;
-            list.appendChild(item);
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            videos.push({ title, url });
+            localStorage.setItem('rocketVideos', JSON.stringify(videos));
             
             document.getElementById('videoTitle').value = '';
             document.getElementById('videoUrl').value = '';
-            alert('VIDEO ADDED SUCCESSFULLY.');
+            renderVideos();
+            alert('VIDEO ADDED AND SAVED.');
+        }
+
+        function deleteVideo(index) {
+            if(!confirm("DELETE THIS VIDEO?")) return;
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            videos.splice(index, 1);
+            localStorage.setItem('rocketVideos', JSON.stringify(videos));
+            renderVideos();
         }
     </script>
 </body>
