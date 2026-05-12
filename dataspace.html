@@ -157,8 +157,8 @@
             <h2 id="fm-title">REFERENCE FILES</h2>
             <div id="admin-file-upload" style="display:none; margin-bottom: 20px; padding: 15px; border: 2px dashed #000;">
                 <h4 style="margin:0 0 10px 0;">[ADMIN] UPLOAD FILE</h4>
-                <input type="text" id="newFileName" placeholder="FILE NAME (e.g. nozzle_blueprint.pdf)">
-                <button class="submit-btn" onclick="uploadFile()">UPLOAD</button>
+                <input type="file" id="filePicker" style="width:100%; margin-bottom:10px; border:none; font-family:inherit;">
+                <button class="submit-btn" onclick="uploadFile()">UPLOAD SELECTED FILE</button>
             </div>
             <div id="fileListContainer">
                 <!-- Files will be injected here -->
@@ -311,8 +311,10 @@
         }
 
         function uploadFile() {
-            const fileName = document.getElementById('newFileName').value;
-            if(!fileName) return alert('ENTER FILE NAME.');
+            const fileInput = document.getElementById('filePicker');
+            if(fileInput.files.length === 0) return alert('SELECT A FILE FIRST.');
+            
+            const fileName = fileInput.files[0].name;
 
             const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
             if(!videos[currentVideoIndex].files) videos[currentVideoIndex].files = [];
@@ -320,8 +322,9 @@
             videos[currentVideoIndex].files.push(fileName);
             localStorage.setItem('rocketVideos', JSON.stringify(videos));
             
-            document.getElementById('newFileName').value = '';
+            fileInput.value = ''; // Reset picker
             renderFileList();
+            alert('FILE NAME RECORDED: ' + fileName);
         }
 
         function deleteFile(fileIndex) {
