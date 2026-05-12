@@ -304,10 +304,26 @@
                 item.className = 'file-list-item';
                 item.innerHTML = `
                     <span>📄 ${f}</span>
-                    ${isAdmin ? `<button class="delete-btn" style="display:block;" onclick="deleteFile(${fIndex})">DELETE</button>` : ''}
+                    <div style="display:flex; gap:5px;">
+                        <button class="home-btn" style="font-size:0.6rem; padding:3px 8px; background:#28a745; color:#fff;" onclick="downloadFile('${f}')">DOWNLOAD</button>
+                        ${isAdmin ? `<button class="delete-btn" style="display:block; margin:0;" onclick="deleteFile(${fIndex})">DELETE</button>` : ''}
+                    </div>
                 `;
                 container.appendChild(item);
             });
+        }
+
+        function downloadFile(fileName) {
+            // In this localStorage prototype, we simulate a download by creating a dummy text file
+            const blob = new Blob([`Content of ${fileName}\n(This is a simulated reference file for the Rocket Lab prototype.)`], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
         }
 
         function uploadFile() {
