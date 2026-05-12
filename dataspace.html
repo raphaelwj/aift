@@ -33,6 +33,24 @@
         .video-item { border: 2px solid #000; padding: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .delete-btn { background: #ff4d4d; color: #fff; border: 2px solid #000; padding: 5px 10px; cursor: pointer; font-size: 0.7rem; font-weight: bold; display: none; margin-left: 10px; }
         .delete-btn:hover { background: #000; }
+
+        /* File Manager Overlay */
+        #file-manager-overlay { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; 
+        }
+        .file-manager-box { 
+            background: #fff; border: 4px solid #000; padding: 30px; width: 80%; max-width: 600px; 
+            box-shadow: 10px 10px 0px var(--point); position: relative;
+        }
+        .close-overlay { 
+            position: absolute; top: 10px; right: 10px; background: #000; color: #fff; 
+            border: none; padding: 5px 10px; cursor: pointer; font-weight: bold;
+        }
+        .file-list-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid #ddd; padding: 10px 0; 
+        }
     </style>
 </head>
 <body>
@@ -132,11 +150,28 @@
         </div>
     </div>
 
+    <!-- FILE MANAGER OVERLAY -->
+    <div id="file-manager-overlay">
+        <div class="file-manager-box">
+            <button class="close-overlay" onclick="closeFileManager()">X</button>
+            <h2 id="fm-title">REFERENCE FILES</h2>
+            <div id="admin-file-upload" style="display:none; margin-bottom: 20px; padding: 15px; border: 2px dashed #000;">
+                <h4 style="margin:0 0 10px 0;">[ADMIN] UPLOAD FILE</h4>
+                <input type="text" id="newFileName" placeholder="FILE NAME (e.g. nozzle_blueprint.pdf)">
+                <button class="submit-btn" onclick="uploadFile()">UPLOAD</button>
+            </div>
+            <div id="fileListContainer">
+                <!-- Files will be injected here -->
+            </div>
+        </div>
+    </div>
+
     <script>
         let isAdmin = false;
+        let currentVideoIndex = -1;
         let defaultVideos = [
-            { title: "[기초] 로켓 노즐 설계 원리 - De Laval Nozzle", url: "https://www.youtube.com/watch?v=bu77R4GdhxA" },
-            { title: "[안전] 추진체 제작 및 안전 수칙 가이드", url: "https://www.youtube.com/watch?v=smQ2u6UFaBg" }
+            { title: "[기초] 로켓 노즐 설계 원리 - De Laval Nozzle", url: "https://www.youtube.com/watch?v=bu77R4GdhxA", files: [] },
+            { title: "[안전] 추진체 제작 및 안전 수칙 가이드", url: "https://www.youtube.com/watch?v=smQ2u6UFaBg", files: [] }
         ];
 
         window.onload = function() {
@@ -175,6 +210,14 @@
             const stored = localStorage.getItem('rocketVideos');
             if(!stored) {
                 localStorage.setItem('rocketVideos', JSON.stringify(defaultVideos));
+            } else {
+                // Migration: Ensure files array exists
+                const videos = JSON.parse(stored);
+                let changed = false;
+                videos.forEach(v => {
+                    if(!v.files) { v.files = []; changed = true; }
+                });
+                if(changed) localStorage.setItem('rocketVideos', JSON.stringify(videos));
             }
             renderVideos();
         }
@@ -186,6 +229,7 @@
             list.innerHTML = '<h3>CURATED REFERENCE VIDEOS</h3>';
             
             videos.forEach((v, index) => {
+                const fileCount = v.files ? v.files.length : 0;
                 const item = document.createElement('div');
                 item.className = 'video-item';
                 item.innerHTML = `
@@ -193,7 +237,8 @@
                         <span>${v.title}</span>
                     </div>
                     <div>
-                        <a href="${v.url}" target="_blank" class="home-btn" style="font-size:0.7rem; display:inline-block;">WATCH</a>
+                        <a href="${v.url}" target="_blank" class="home-btn" style="font-size:0.7rem; display:inline-block; background:#ff4d4d; color:#fff;">WATCH</a>
+                        <button class="home-btn" onclick="openFileManager(${index})" style="font-size:0.7rem; display:inline-block; background:#007bff; color:#fff; margin-left:5px;">FILES (${fileCount})</button>
                         <button class="delete-btn" onclick="deleteVideo(${index})" style="display:${isAdmin ? 'inline-block' : 'none'}">X</button>
                     </div>
                 `;
@@ -207,7 +252,7 @@
             if(!title || !url) return alert('TITLE AND URL REQUIRED.');
 
             const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
-            videos.push({ title, url });
+            videos.push({ title, url, files: [] });
             localStorage.setItem('rocketVideos', JSON.stringify(videos));
             
             document.getElementById('videoTitle').value = '';
@@ -222,6 +267,69 @@
             videos.splice(index, 1);
             localStorage.setItem('rocketVideos', JSON.stringify(videos));
             renderVideos();
+        }
+
+        // File Management Functions
+        function openFileManager(index) {
+            currentVideoIndex = index;
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            const video = videos[index];
+            
+            document.getElementById('fm-title').innerText = `FILES: ${video.title}`;
+            document.getElementById('admin-file-upload').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('file-manager-overlay').style.display = 'flex';
+            
+            renderFileList();
+        }
+
+        function closeFileManager() {
+            document.getElementById('file-manager-overlay').style.display = 'none';
+            currentVideoIndex = -1;
+            renderVideos(); // Refresh file counts
+        }
+
+        function renderFileList() {
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            const files = videos[currentVideoIndex].files || [];
+            const container = document.getElementById('fileListContainer');
+            
+            if(files.length === 0) {
+                container.innerHTML = '<p style="color:#666; text-align:center;">NO FILES UPLOADED.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            files.forEach((f, fIndex) => {
+                const item = document.createElement('div');
+                item.className = 'file-list-item';
+                item.innerHTML = `
+                    <span>📄 ${f}</span>
+                    ${isAdmin ? `<button class="delete-btn" style="display:block;" onclick="deleteFile(${fIndex})">DELETE</button>` : ''}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function uploadFile() {
+            const fileName = document.getElementById('newFileName').value;
+            if(!fileName) return alert('ENTER FILE NAME.');
+
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            if(!videos[currentVideoIndex].files) videos[currentVideoIndex].files = [];
+            
+            videos[currentVideoIndex].files.push(fileName);
+            localStorage.setItem('rocketVideos', JSON.stringify(videos));
+            
+            document.getElementById('newFileName').value = '';
+            renderFileList();
+        }
+
+        function deleteFile(fileIndex) {
+            if(!confirm("DELETE THIS FILE?")) return;
+            const videos = JSON.parse(localStorage.getItem('rocketVideos') || "[]");
+            videos[currentVideoIndex].files.splice(fileIndex, 1);
+            localStorage.setItem('rocketVideos', JSON.stringify(videos));
+            renderFileList();
         }
     </script>
 </body>
